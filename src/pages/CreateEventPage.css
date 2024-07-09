@@ -1,0 +1,54 @@
+.container {
+    max-width: 800px;
+    background-color: #F8F8FA;
+    padding: 40px;
+    margin: 0 auto;
+    border-radius: 10px;
+  }
+  
+ 
+  .create-event-form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border: none;
+  }
+  
+  
+  .create-event-form .form-control {
+    border-radius: 5px;
+    border: 1px solid #cccccc;
+  }
+  
+
+  .create-event-form .btn-primary {
+    background-color: #7848F4; 
+    border-color: #7848F4;
+    border-radius: 5px;
+    width: 100%;
+    color: #ffffff; 
+  }
+  
+  .create-event-form .btn-primary:hover {
+    background-color: #5e3ab8; 
+    border-color: #5e3ab8;
+  }
+  
+ 
+  .create-event-form label,
+  .create-event-form input,
+  .create-event-form textarea {
+    color: #333333; 
+  }
+  
+ 
+  .create-event-form label[for="eventDescription"] {
+    color: #ECECEC; 
+  }
+  
+  
+  h1 {
+    color: #000000; 
+  }
+  
