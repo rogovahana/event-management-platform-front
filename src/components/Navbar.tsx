@@ -4,7 +4,11 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import { Link } from "react-router-dom";
 import "../components/Navbar.css";
+
+
+
 
 function Navbari() {
   return (
@@ -26,12 +30,16 @@ function Navbari() {
             </Nav.Link> */}
           </Nav>
           <Form className="d-flex">
-          <Button variant="outline" style={{ color: "#7848F4" }} className="ms-1 login-btn">
-              Login
-            </Button>
-            <Button variant="primary" style={{ backgroundColor: "#7848F4", borderColor: "#7848F4" }} className="ms-1">
-              Signup
-            </Button>
+            <Link to="/login">
+              <Button variant="outline" style={{ color: "#7848F4" }} className="ms-1 login-btn">
+                Login
+              </Button>
+            </Link>
+            <Link to="/sign-up">
+              <Button variant="primary" style={{ backgroundColor: "#7848F4", borderColor: "#7848F4" }} className="ms-1">
+                  Signup
+              </Button>
+            </Link>
           </Form>
         </Navbar.Collapse>
       </Container>

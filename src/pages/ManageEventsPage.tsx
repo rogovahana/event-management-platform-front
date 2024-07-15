@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { fetchEvents, deleteEvent } from '../services/eventService';
 import './ManageEventsPage.css';
+import Navbari from '../components/Navbar';
 
 const ManageEventsPage: React.FC = () => {
   const [events, setEvents] = useState<any[]>([]);
@@ -36,6 +37,8 @@ const ManageEventsPage: React.FC = () => {
   }
 
   return (
+    <>
+    <Navbari />
     <div className="container my-5">
       <h1 className="text-center mb-4">Manage Events</h1>
       {events.length === 0 ? (
@@ -66,6 +69,7 @@ const ManageEventsPage: React.FC = () => {
         </table>
       )}
     </div>
+    </>
   );
 };
 

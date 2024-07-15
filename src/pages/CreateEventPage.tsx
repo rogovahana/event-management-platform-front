@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './CreateEventPage.css'; 
+import Navbari from '../components/Navbar';
 
 const CreateEventPage: React.FC = () => {
   const [eventName, setEventName] = useState('');
@@ -51,6 +52,8 @@ const CreateEventPage: React.FC = () => {
   };
 
   return (
+    <>
+    <Navbari />
     <div className="container my-5">
       <h1 className="text-center mb-4">Create Event</h1>
       <form onSubmit={handleSubmit} className="create-event-form">
@@ -62,7 +65,7 @@ const CreateEventPage: React.FC = () => {
             value={eventName}
             onChange={(e) => setEventName(e.target.value)}
             className="form-control"
-            placeholder="Enter event name"
+            placeholder="Enter event name" 
           />
         </div>
         <div className="form-group mb-3">
@@ -72,7 +75,7 @@ const CreateEventPage: React.FC = () => {
             id="eventDate"
             value={eventDate}
             onChange={(e) => setEventDate(e.target.value)}
-            className="form-control"
+            className="form-control" 
           />
         </div>
         <h1 className="mb-4">Event Description</h1>
@@ -82,7 +85,7 @@ const CreateEventPage: React.FC = () => {
             type="file"
             id="eventImage"
             onChange={handleImageChange}
-            className="form-control"
+            className="form-control" 
           />
         </div>
         <div className="form-group mb-3">
@@ -99,6 +102,7 @@ const CreateEventPage: React.FC = () => {
         <button type="submit" className="btn btn-primary btn-block">Create Event</button>
       </form>
     </div>
+    </>
   );
 };
 
