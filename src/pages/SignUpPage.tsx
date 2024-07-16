@@ -102,7 +102,7 @@ const SignUpPage: React.FC = () => {
       <div className="main-img d-none d-lg-block">
         <img src={signImg} alt="Event" className="image" />
       </div>
-      <div className="main-content w-md-75 w-90">
+      <div className="main-content w-md-75 w-90 my-md-3">
         <div className="sub-content">
           <h2>
             Event<span style={{ color: "#7848F4" }}>Hive</span>

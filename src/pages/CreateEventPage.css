@@ -1,11 +1,11 @@
-/* .container {
+.create-event-container {
     max-width: 800px;
     background-color: #F8F8FA;
     padding: 40px;
     margin: 0 auto;
     border-radius: 10px;
   }
-   */
+  
  
   .create-event-form {
     background-color: #ffffff;
@@ -42,12 +42,12 @@
     color: #333333; 
   }
   
- 
+
   .create-event-form label[for="eventDescription"] {
     color: #ECECEC; 
   }
   
-  
+
   h1 {
     color: #000000; 
   }

@@ -64,7 +64,7 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="w-100 d-flex justify-content-center align-content-center">
-      <div className="main-content w-md-75 w-90">
+      <div className="main-content w-md-75 w-90 my-md-3">
         <div className="sub-content">
           <h2>
             Event<span style={{ color: "#7848F4" }}>Hive</span>

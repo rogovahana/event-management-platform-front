@@ -54,7 +54,7 @@ const CreateEventPage: React.FC = () => {
   return (
     <>
     <Navbari />
-    <div className="container my-5">
+    <div className="create-event-container my-5">
       <h1 className="text-center mb-4">Create Event</h1>
       <form onSubmit={handleSubmit} className="create-event-form">
         <div className="form-group mb-3">
