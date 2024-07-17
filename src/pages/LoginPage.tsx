@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import loginImg from '../assets/login_img.jpg';
 import googleLogo from '../assets/google_logo.png';
 import { Form, Button } from 'react-bootstrap';
+import { fetchEvents } from '../services/UpcomingEventService';
+import { toast } from 'react-toastify';
 import './AuthPage.css';
 
 const LoginPage: React.FC = () => {
@@ -51,6 +53,9 @@ const LoginPage: React.FC = () => {
         setEmail('');
         setPassword('');
         setSubmitError('');
+        const events = await fetchEvents();
+        const eventTitles = events.map((event: any) => event.title).join(', ');
+        toast.success(`Upcoming events: ${eventTitles}`);
       } else {
         const errorData = await response.json();
         setSubmitError(errorData.message || 'Failed to log in');
