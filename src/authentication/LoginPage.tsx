@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
-import signImg from '../assets/sign_img.jpg';
+import loginImg from '../assets/login_img.jpg';
 import googleLogo from '../assets/google_logo.png';
 import { Form, Button } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from './AuthContext';
 import './AuthPage.css';
 
-const SignUpPage: React.FC = () => {
-  const [name, setName] = useState('');
+const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [nameError, setNameError] = useState('');
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
 
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -20,27 +22,15 @@ const SignUpPage: React.FC = () => {
 
     let isFormValid = true;
 
-    if (!name.trim()) {
-      setNameError('Name is required.');
-      isFormValid = false;
-    } else {
-      setNameError('');
-    }
-
     if (!email.trim()) {
       setEmailError('Email is required.');
-      isFormValid = false;
-    } else if (!validateEmail(email)) {
-      setEmailError('Please enter a valid email address.');
       isFormValid = false;
     } else {
       setEmailError('');
     }
 
-    if (!validatePassword(password)) {
-      setPasswordError(
-        'Password must be at least 8 characters long and contain at least 1 uppercase letter, 1 number, and 1 symbol.'
-      );
+    if (!password.trim()) {
+      setPasswordError('Password is required.');
       isFormValid = false;
     } else {
       setPasswordError('');
@@ -52,22 +42,25 @@ const SignUpPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch('/api/signup', {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ email, password }),
       });
 
       if (response.ok) {
-        alert('Sign up successful!');
-        setName('');
+        const user = await response.json();
+        signIn(user);
+        alert('Login successful!');
         setEmail('');
         setPassword('');
+        setSubmitError('');
+        navigate('/create-event');
       } else {
         const errorData = await response.json();
-        setSubmitError(errorData.message || 'Failed to sign up');
+        setSubmitError(errorData.message || 'Failed to log in');
       }
     } catch (error) {
       setSubmitError('An error occurred. Please try again later.');
@@ -76,57 +69,17 @@ const SignUpPage: React.FC = () => {
     }
   };
 
-  const validateEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
-
-  const validatePassword = (password: string): boolean => {
-    if (password.length < 8) {
-      return false;
-    }
-
-    const uppercaseRegex = /[A-Z]/;
-    const numberRegex = /[0-9]/;
-    const symbolRegex = /[!@#$%^&*()_+{}\[\]:;<>,.?~\\-]/;
-
-    if (!uppercaseRegex.test(password) || !numberRegex.test(password) || !symbolRegex.test(password)) {
-      return false;
-    }
-
-    return true;
-  };
-
   return (
     <div className="w-100 d-flex justify-content-center align-content-center">
-      <div className="main-img d-none d-lg-block">
-        <img src={signImg} alt="Event" className="image" />
-      </div>
       <div className="main-content w-md-75 w-90 my-md-3">
         <div className="sub-content">
           <h2>
             Event<span style={{ color: "#7848F4" }}>Hive</span>
           </h2>
-          <h3>Sign Up to Event Hive</h3>
+          <h3>Log in to Event Hive</h3>
           <Form className="form" onSubmit={handleFormSubmit}>
             <div>
-              <Form.Label htmlFor="formName">YOUR NAME</Form.Label>
-              <Form.Control
-                type="text"
-                id="formName"
-                placeholder="Enter your name"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  setNameError('');
-                }}
-                isInvalid={!!nameError}
-              />
-              <Form.Control.Feedback type="invalid">{nameError}</Form.Control.Feedback>
-            </div>
-
-            <div>
-              <Form.Label htmlFor="formEmail">EMAIL</Form.Label>
+              <Form.Label htmlFor="formEmail"></Form.Label>
               <Form.Control
                 type="email"
                 id="formEmail"
@@ -142,7 +95,7 @@ const SignUpPage: React.FC = () => {
             </div>
 
             <div>
-              <Form.Label htmlFor="formPassword">PASSWORD</Form.Label>
+              <Form.Label htmlFor="formPassword"></Form.Label>
               <Form.Control
                 type="password"
                 id="formPassword"
@@ -158,7 +111,7 @@ const SignUpPage: React.FC = () => {
             </div>
 
             <Button className="w-50 mx-auto" type="submit" disabled={submitting}>
-              {submitting ? 'Signing Up...' : 'Sign Up'}
+              {submitting ? 'Logging In...' : 'Log in'}
             </Button>
 
             {submitError && <div className="text-danger text-center mt-2">{submitError}</div>}
@@ -167,13 +120,16 @@ const SignUpPage: React.FC = () => {
 
             <Button type="button" className="google-btn">
               <img src={googleLogo} alt="Google" className="google-logo" />
-              Sign up with Google
+              Log in with Google
             </Button>
           </Form>
         </div>
+      </div>
+      <div className="main-img d-none d-lg-block">
+        <img src={loginImg} alt="Event" className="image" />
       </div>
     </div>
   );
 };
 
-export default SignUpPage;
+export default LoginPage;

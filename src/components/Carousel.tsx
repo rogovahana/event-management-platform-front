@@ -61,6 +61,7 @@ import { Link } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import CreateEventButton from "./CreateEventButton";
 
 type Event = {
   title: string;
@@ -144,7 +145,8 @@ function Carouseli() {
             </Col>
             <Col xs={12} md={8} className="text-center text-md-left">
               <h3 className="mb-3">Create Your Next Event</h3>
-              <Link to="/create-event">
+              <CreateEventButton />
+              {/* <Link to="/create-event">
                 <Button
                   size="lg"
                   className="create-event-button"
@@ -152,7 +154,7 @@ function Carouseli() {
                 >
                   <i className="fas fa-plus-circle mr-2"></i> Create an Event
                 </Button>
-              </Link>
+              </Link> */}
             </Col>
           </Row>
         </Container>

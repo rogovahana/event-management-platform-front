@@ -3,12 +3,14 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from "./pages/Homepage";
 import CreateEventPage from './pages/CreateEventPage';
 import ManageEventsPage from './pages/ManageEventsPage';
-import SignUpPage from './pages/SignUpPage';
-import LoginPage from './pages/LoginPage';
+import SignUpPage from './authentication/SignUpPage';
+import LoginPage from './authentication/LoginPage';
 import EventDetails from './components/EventDetail';
+import { AuthProvider } from './authentication/AuthContext';
 
 const AppRouter: React.FC = () => {
   return (
+    <AuthProvider>
     <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
@@ -19,6 +21,7 @@ const AppRouter: React.FC = () => {
         <Route path="/events" element={<EventDetails />} />
       </Routes>
     </Router>
+    </AuthProvider>
   );
 };
 
