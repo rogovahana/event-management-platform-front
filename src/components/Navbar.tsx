@@ -5,14 +5,12 @@ import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
-import "../components/Navbar.css";
-
-
+import "./Navbar.css";
 
 
 function Navbari() {
   return (
-    <Navbar expand="lg" className="bg-light">
+    <Navbar expand="lg" className="bg-light sticky-top">
       <Container fluid>
         <Navbar.Brand href="/">
           <span >
@@ -22,9 +20,9 @@ function Navbari() {
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll" className="justify-content-end">
           <Nav className="me-auto">
-            <Nav.Link href="#events" style={{ color: "#7848F4" }}>
+            <Link to="/browse-events" className="events-link" >
               Events
-            </Nav.Link>
+            </Link>
             {/* <Nav.Link href="#contact-us" style={{ color: "#7848F4" }}>
               Contact Us
             </Nav.Link> */}
