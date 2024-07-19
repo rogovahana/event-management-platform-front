@@ -21,3 +21,19 @@ export const deleteEvent = async (eventId: string) => {
     throw error;
   }
 };
+
+export const updateEvent = async (event: any) => {
+  try {
+    const response = await fetch(`${API_URL}/events/${event.id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(event)
+    });
+    return await response.json();
+  } catch (error) {
+    console.error('Error updating event:', error);
+    throw error;
+  }
+};
