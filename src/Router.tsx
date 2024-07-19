@@ -5,9 +5,10 @@ import CreateEventPage from './pages/CreateEventPage';
 import ManageEventsPage from './pages/ManageEventsPage';
 import SignUpPage from './authentication/SignUpPage';
 import LoginPage from './authentication/LoginPage';
-import EventDetails from './components/EventDetail';
+import EventDetails from './pages/EventDetail';
 import { AuthProvider } from './authentication/AuthContext';
 import BrowseEventsPage from './pages/BrowseEventsPage';
+import CategoryEvents from './pages/Category/EventsbyCategory';
 
 const AppRouter: React.FC = () => {
   return (
@@ -21,6 +22,7 @@ const AppRouter: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/browse-events" element={<BrowseEventsPage />} />
         <Route path="/events" element={<EventDetails />} />
+        <Route path="/category/:category" element={<CategoryEvents />} />
       </Routes>
     </Router>
     </AuthProvider>

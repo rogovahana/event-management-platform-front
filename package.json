@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
+    "add-to-calendar-button-react": "^2.6.18",
     "bootstrap": "^5.3.3",
     "leaflet": "^1.9.4",
     "react": "^18.3.1",
@@ -20,12 +21,14 @@
     "react-leaflet": "^4.2.1",
     "react-router-dom": "^6.24.1",
     "react-share": "^5.1.0",
+    "react-star-ratings": "^2.3.0",
     "react-toastify": "^10.0.5"
   },
   "devDependencies": {
     "@types/leaflet": "^1.9.12",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@types/react-star-ratings": "^2.3.3",
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "@vitejs/plugin-react": "^4.3.1",

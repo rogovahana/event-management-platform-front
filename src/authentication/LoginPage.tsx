@@ -42,7 +42,7 @@ const LoginPage: React.FC = () => {
     }
 
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('https://localhost:7136/api/Auth/Login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -51,13 +51,28 @@ const LoginPage: React.FC = () => {
       });
 
       if (response.ok) {
-        const user = await response.json();
-        signIn(user);
-        alert('Login successful!');
-        setEmail('');
-        setPassword('');
-        setSubmitError('');
-        navigate('/create-event');
+        const { userId, token } = await response.json();
+        //  saing the token in local storage
+        localStorage.setItem('authToken', token);
+        const userResponse = await fetch(`https://localhost:7136/api/User/${userId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json',
+          },
+        });
+
+        if (userResponse.ok) {
+          const user = await userResponse.json();
+          signIn(user);
+          alert('Login successful!');
+          setEmail('');
+          setPassword('');
+          setSubmitError('');
+          navigate('/create-event');
+        } else {
+          const errorData = await userResponse.json();
+          setSubmitError(errorData.message || 'Failed to fetch user details');
+        }
       } else {
         const errorData = await response.json();
         setSubmitError(errorData.message || 'Failed to log in');
@@ -69,7 +84,7 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  return (
+  return ( 
     <div className="w-100 d-flex justify-content-center align-content-center">
       <div className="main-content w-md-75 w-90 my-md-3">
         <div className="sub-content">
@@ -133,3 +148,4 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+

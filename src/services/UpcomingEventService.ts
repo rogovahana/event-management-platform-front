@@ -1,5 +1,5 @@
  export const fetchEvents = async () => {
-   const response = await fetch('/api/events');
+   const response = await fetch('https://localhost:7136/api/Event/upcomingEvents');
    if (!response.ok) {
      throw new Error('Failed to fetch events');
    }

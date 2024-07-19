@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { Container, Row, Col, Button, Card, Modal } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Button,
+  Card,
+  Modal,
+  Form,
+} from "react-bootstrap";
 import { FaCalendarAlt, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import {
   FacebookShareButton,
@@ -12,8 +20,9 @@ import {
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import Navbari from "./Navbar";
-import Footer from "./Footer";
+import Navbari from "../components/Navbar";
+import Footer from "../components/Footer";
+import StarRatings from "react-star-ratings";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -49,27 +58,70 @@ const EventDetails: React.FC = () => {
     description: `
       DesignHub organized a 3D Modeling Workshop using Blender on 16th February at 5 PM.
       The workshop taught participants the magic of creating stunning 3D models and animations using Blender.
-      It was suitable for both beginners and experienced users. The event was followed by a blender-render competition, 
+      It was suitable for both beginners and experienced users. The event was followed by a blender-render competition,
       which added to the excitement.
     `,
     location: "IIIT Sonepat",
     lat: 28.9124,
     lng: 77.0824,
     hours: "Weekdays hour: 7PM - 10PM, Sunday hour: 7PM - 10PM",
-    contact:
-      "Please go to www.sneakypeeks.com and refer the FAQ section for more detail",
+    contact: "Organizer Contact",
     tags: ["Indonesia event", "Jakartan event", "UI", "Seminar"],
     imageUrl: "/assets/carousel/baner1.jpg",
   });
 
   const [showModal, setShowModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
+  const [review, setReview] = useState({
+    userId: 0,
+    eventId: 0,
+    rating: 0,
+    comment: "",
+  });
+
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [reviewError, setReviewError] = useState("");
 
   const handleClose = () => setShowModal(false);
   const handleShow = () => setShowModal(true);
 
   const handleSignupClose = () => setShowSignupModal(false);
   const handleSignupShow = () => setShowSignupModal(true);
+
+  const handleReviewChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    setReview({
+      ...review,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleRatingChange = (newRating: number) => {
+    setReview({
+      ...review,
+      rating: newRating,
+    });
+  };
+
+  const handleReviewSubmit = async () => {
+    try {
+      const response = await fetch("https://localhost:7136/Review", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(review),
+      });
+      if (response.ok) {
+        setReviewSubmitted(true);
+      } else {
+        setReviewError("Failed to submit review. Please try again.");
+      }
+    } catch (error) {
+      setReviewError("An error occurred. Please try again.");
+    }
+  };
 
   const shareUrl = window.location.href;
 
@@ -100,9 +152,7 @@ const EventDetails: React.FC = () => {
                 <Button variant="primary" onClick={handleSignupShow}>
                   Book Now
                 </Button>
-                <Button variant="primary" onClick={handleSignupShow}>
-                  Add to Calendar
-                </Button>
+                <Button variant="primary">Add to Calendar</Button>
               </Card.Body>
             </Col>
           </Row>
@@ -115,10 +165,10 @@ const EventDetails: React.FC = () => {
                 <h5 style={{ color: "#7848F4" }}>Description</h5>
                 <p>{event.description}</p>
                 <hr />
-                <h5  style={{ color: "#7848F4" }}>Hours</h5>
+                <h5 style={{ color: "#7848F4" }}>Hours</h5>
                 <p>{event.hours}</p>
                 <hr />
-                <h5  style={{ color: "#7848F4" }}>Organizer Contact</h5>
+                <h5 style={{ color: "#7848F4" }}>Organizer Contact</h5>
                 <p>
                   <FaPhone /> {event.contact}
                 </p>
@@ -128,8 +178,10 @@ const EventDetails: React.FC = () => {
           <Col md={4}>
             <Card className="my-4">
               <Card.Body>
-                <h5><FaMapMarkerAlt /> Event Location</h5>
-               
+                <h5>
+                  <FaMapMarkerAlt /> Event Location
+                </h5>
+
                 <MapContainer
                   center={[event.lat, event.lng]}
                   zoom={15}
@@ -164,6 +216,44 @@ const EventDetails: React.FC = () => {
           </Col>
         </Row>
 
+        {/* Review Section */}
+        <Card className="my-4">
+          <Card.Body>
+            <h5>Leave a Review</h5>
+            <Form>
+              <Form.Group controlId="formRating">
+                <Form.Label>Rating</Form.Label>
+                <StarRatings
+                  rating={review.rating}
+                  // starRatedColor="#7848F4"
+                  changeRating={handleRatingChange}
+                  numberOfStars={5}
+                  name="rating"
+                />
+              </Form.Group>
+              <Form.Group controlId="formComment">
+                <Form.Label>Comment</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  name="comment"
+                  value={review.comment}
+                  onChange={handleReviewChange}
+                />
+              </Form.Group>
+              <Button variant="primary" onClick={handleReviewSubmit}>
+                Submit Review
+              </Button>
+            </Form>
+            {reviewSubmitted && (
+              <p className="mt-3 text-success">
+                Review submitted successfully!
+              </p>
+            )}
+            {reviewError && <p className="mt-3 text-danger">{reviewError}</p>}
+          </Card.Body>
+        </Card>
+
         {/* Event Details Modal */}
         <Modal show={showModal} onHide={handleClose}>
           <Modal.Header closeButton>
@@ -179,17 +269,7 @@ const EventDetails: React.FC = () => {
               <FaMapMarkerAlt /> {event.location}
             </p>
           </Modal.Body>
-          <Modal.Footer>
-            <Button variant="outline" style={{ color: "#7848F4" }}>
-              Add to Calendar
-            </Button>
-            <Button variant="primary" className="ml-2">
-              Book Now
-            </Button>
-          </Modal.Footer>
         </Modal>
-
-        {/* Sign-Up Modal */}
         <Modal show={showSignupModal} onHide={handleSignupClose}>
           <Modal.Header closeButton>
             <Modal.Title>Sign up</Modal.Title>
@@ -205,5 +285,4 @@ const EventDetails: React.FC = () => {
     </>
   );
 };
-
 export default EventDetails;

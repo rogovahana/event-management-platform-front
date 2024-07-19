@@ -8,20 +8,19 @@ type Category = {
 };
 
 const categories: Category[] = [
-  { name: "Technology", iconClass: "fas fa-city" },
-  { name: "Nightlife", iconClass: "fas fa-landmark" },
-  { name: "Music", iconClass: "fas fa-building" },
-  { name: "Art", iconClass: "fas fa-music" },
-  { name: "Sport", iconClass: "fas fa-umbrella-beach" },
-  
+  { name: "Technology", iconClass: "fas fa-laptop" },
+  { name: "Nightlife", iconClass: "fas fa-cocktail" },
+  { name: "Music", iconClass: "fas fa-music" },
+  { name: "Art", iconClass: "fas fa-paint-brush" },
+  { name: "Sport", iconClass: "fas fa-basketball-ball" },
 ];
 
 const Category: React.FC = () => {
   const navigate = useNavigate();
 
   const handleClick = (category: string) => {
-    // Navigate to the proper page!!!!!
-    navigate(`/events?category=${category}`);
+    // Navigate to the proper page
+    navigate(`/category/${category}`);
   };
 
   return (

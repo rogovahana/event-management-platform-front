@@ -41,12 +41,6 @@ function Carouseli() {
     console.log(" events:", eventData);
     setEvents(eventData);
   }, []);
-
-  const [showModal, setShowModal] = useState(false);
-
-  const handleClose = () => setShowModal(false);
-  const handleShow = () => setShowModal(true);
-
   return (
     <div>
       <ToastContainer />
@@ -65,24 +59,7 @@ function Carouseli() {
             </Carousel.Item>
           ))}
         </Carousel>
-        <div className="position-absolute" style={{ top: "20%", left: "10%" }}>
-          <div
-            className="bg-white p-3 rounded shadow text-dark"
-            style={{ width: "300px" }}
-          >
-            <img
-              src={baneri1}
-              alt="Event"
-              className="img-fluid mb-2"
-  style={{ maxHeight: "400px", objectFit: "cover" }}
-            />
-            <p className="mb-1">Title: {events[0]?.title}</p>
-            <p className="mb-2">Location: {events[0]?.location}</p>
-            <Button variant="primary" onClick={handleShow}>
-              View Event Details
-            </Button>
-          </div>
-        </div>
+ 
         <div className="position-absolute bottom-0 start-50 translate-middle-x w-100">
           <SearchEvent />
         </div>
@@ -113,38 +90,6 @@ function Carouseli() {
           </Row>
         </Container>
       </div>
-
-      <Modal show={showModal} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Event Details</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Container>
-            <Row>
-              <Col xs={12} md={4}>
-                <img src={baneri1} alt="Event" className="img-fluid" />
-              </Col>
-              <Col xs={12} md={8}>
-                <h5>{events[0]?.title}</h5>
-                <p>Date and Time: {events[0]?.date}</p>
-                <p>Location: {events[0]?.location}</p>
-                <p>Description: Event Description</p>
-
-                <Button
-                  variant="primary"
-                  onClick={() => alert("Booking confirmed")}
-                  className="mr-2"
-                >
-                  Book Now
-                </Button>
-                <Button onClick={() => alert("Added to calendar")}>
-                  Add to Calendar
-                </Button>
-              </Col>
-            </Row>
-          </Container>
-        </Modal.Body>
-      </Modal>
     </div>
   );
 }
