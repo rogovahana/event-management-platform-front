@@ -9,6 +9,8 @@ import EventDetails from './pages/EventDetail';
 import { AuthProvider } from './authentication/AuthContext';
 import BrowseEventsPage from './pages/BrowseEventsPage';
 import CategoryEvents from './pages/Category/EventsbyCategory';
+import TicketBookingForm from './components/TicketBookingForm';
+import BookedTicketsPage from './pages/BookedTicketPage';
 
 const AppRouter: React.FC = () => {
   return (
@@ -23,6 +25,8 @@ const AppRouter: React.FC = () => {
         <Route path="/browse-events" element={<BrowseEventsPage />} />
         <Route path="/events" element={<EventDetails />} />
         <Route path="/category/:category" element={<CategoryEvents />} />
+        <Route path="/book-tickets/:eventId" element={<TicketBookingForm />} />
+        <Route path="/my-tickets" element={<BookedTicketsPage />} />
       </Routes>
     </Router>
     </AuthProvider>
