@@ -29,6 +29,7 @@ import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 import { FaLocationDot } from "react-icons/fa6";
+import AddToCalendarComponent from "../components/AddtoCalendarButton";
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
@@ -83,8 +84,7 @@ const EventDetails: React.FC = () => {
   const [reviewError, setReviewError] = useState("");
 
   const handleClose = () => setShowModal(false);
-  const handleShow = () => setShowModal(true);
-
+  
   const handleSignupClose = () => setShowSignupModal(false);
   const handleSignupShow = () => setShowSignupModal(true);
 
@@ -152,7 +152,7 @@ const EventDetails: React.FC = () => {
                 <Button variant="primary" onClick={handleSignupShow}>
                   Book Now
                 </Button>
-                <Button variant="primary">Add to Calendar</Button>
+                <AddToCalendarComponent/>
               </Card.Body>
             </Col>
           </Row>
