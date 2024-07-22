@@ -1,14 +1,6 @@
-import React, { useState } from "react";
-import {
-  Container,
-  Row,
-  Col,
-  Button,
-  Card,
-  Modal,
-  Form,
-} from "react-bootstrap";
-import { FaCalendarAlt, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Button, Card, Modal } from "react-bootstrap";
+import { FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
 import {
   FacebookShareButton,
   TwitterShareButton,
@@ -22,14 +14,14 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import Navbari from "../components/Navbar";
 import Footer from "../components/Footer";
-import StarRatings from "react-star-ratings";
+import AddToCalendarComponent from "../components/AddtoCalendarButton";
+import Review from "../components/Review";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import { FaLocationDot } from "react-icons/fa6";
-import AddToCalendarComponent from "../components/AddtoCalendarButton";
+import StarRatings from "react-star-ratings";
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
@@ -39,91 +31,62 @@ L.Icon.Default.mergeOptions({
 
 interface EventDetails {
   title: string;
-  date: string;
-  time: string;
   description: string;
+  startDate: string;
+  endDate: string;
   location: string;
-  lat: number;
-  lng: number;
-  hours: string;
-  contact: string;
-  imageUrl: string;
-  tags: string[];
+  categoryId: number;
+  cityId: number;
+  attendees: number;
+  images: { imageUrl: string }[];
+}
+
+interface Review {
+  userId: number;
+  eventId: number;
+  rating: number;
+  comment: string;
 }
 
 const EventDetails: React.FC = () => {
-  const [event] = useState<EventDetails>({
-    title: "Dream world wide in jakarta",
-    date: "Saturday, March 18 2023",
-    time: "3:00 PM",
-    description: `
-      DesignHub organized a 3D Modeling Workshop using Blender on 16th February at 5 PM.
-      The workshop taught participants the magic of creating stunning 3D models and animations using Blender.
-      It was suitable for both beginners and experienced users. The event was followed by a blender-render competition,
-      which added to the excitement.
-    `,
-    location: "IIIT Sonepat",
-    lat: 28.9124,
-    lng: 77.0824,
-    hours: "Weekdays hour: 7PM - 10PM, Sunday hour: 7PM - 10PM",
-    contact: "Organizer Contact",
-    tags: ["Indonesia event", "Jakartan event", "UI", "Seminar"],
-    imageUrl: "/assets/carousel/baner1.jpg",
-  });
-
+  const [event, setEvent] = useState<EventDetails | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showSignupModal, setShowSignupModal] = useState(false);
-  const [review, setReview] = useState({
-    userId: 0,
-    eventId: 0,
-    rating: 0,
-    comment: "",
-  });
+  const [reviews, setReviews] = useState<Review[]>([]);
 
-  const [reviewSubmitted, setReviewSubmitted] = useState(false);
-  const [reviewError, setReviewError] = useState("");
+  useEffect(() => {
+    // Dummy event data
+    const dummyEvent: EventDetails = {
+      title: "Sample Event",
+      description: "This is a description of the sample event.",
+      startDate: "2024-07-21T22:15:05.908Z",
+      endDate: "2024-07-21T22:15:05.908Z",
+      location: "123 Sample Street, Sample City",
+      categoryId: 1,
+      cityId: 1,
+      attendees: 150,
+      images: [
+        {
+          imageUrl: "https://via.placeholder.com/800x400.png?text=Event+Image",
+        },
+      ],
+    };
+    setEvent(dummyEvent);
+  }, []);
 
   const handleClose = () => setShowModal(false);
-  
   const handleSignupClose = () => setShowSignupModal(false);
   const handleSignupShow = () => setShowSignupModal(true);
 
-  const handleReviewChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setReview({
-      ...review,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleRatingChange = (newRating: number) => {
-    setReview({
-      ...review,
-      rating: newRating,
-    });
-  };
-
-  const handleReviewSubmit = async () => {
-    try {
-      const response = await fetch("https://localhost:7136/Review", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(review),
-      });
-      if (response.ok) {
-        setReviewSubmitted(true);
-      } else {
-        setReviewError("Failed to submit review. Please try again.");
-      }
-    } catch (error) {
-      setReviewError("An error occurred. Please try again.");
-    }
+  const handleReviewSubmit = (review: Review) => {
+    setReviews([...reviews, review]);
   };
 
   const shareUrl = window.location.href;
+
+  if (!event) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <>
@@ -136,7 +99,7 @@ const EventDetails: React.FC = () => {
           <Row noGutters>
             <Col md={8}>
               <Card.Img
-                src="/assets/carousel/baner1.jpg"
+                src={event.images[0].imageUrl}
                 alt="Event Image"
                 className="img-fluid"
               />
@@ -146,13 +109,15 @@ const EventDetails: React.FC = () => {
                 <Card.Title>{event.title}</Card.Title>
                 <h5>Date & Time</h5>
                 <p>
-                  <FaCalendarAlt /> {event.date} at {event.time} <br />
-                  <FaLocationDot /> {event.location}
+                  <FaCalendarAlt />{" "}
+                  {new Date(event.startDate).toLocaleDateString()} -{" "}
+                  {new Date(event.endDate).toLocaleDateString()} <br />
+                  <FaMapMarkerAlt /> {event.location}
                 </p>
                 <Button variant="primary" onClick={handleSignupShow}>
                   Book Now
                 </Button>
-                <AddToCalendarComponent/>
+                <AddToCalendarComponent />
               </Card.Body>
             </Col>
           </Row>
@@ -165,13 +130,8 @@ const EventDetails: React.FC = () => {
                 <h5 style={{ color: "#7848F4" }}>Description</h5>
                 <p>{event.description}</p>
                 <hr />
-                <h5 style={{ color: "#7848F4" }}>Hours</h5>
-                <p>{event.hours}</p>
-                <hr />
-                <h5 style={{ color: "#7848F4" }}>Organizer Contact</h5>
-                <p>
-                  <FaPhone /> {event.contact}
-                </p>
+                <h5 style={{ color: "#7848F4" }}>Attendees</h5>
+                <p>{event.attendees}</p>
               </Card.Body>
             </Card>
           </Col>
@@ -183,7 +143,8 @@ const EventDetails: React.FC = () => {
                 </h5>
 
                 <MapContainer
-                  center={[event.lat, event.lng]}
+                  // lng lat or city?
+                  center={[51.505, -0.09]}
                   zoom={15}
                   style={{ height: "400px", width: "100%" }}
                 >
@@ -191,11 +152,9 @@ const EventDetails: React.FC = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
-                  <Marker position={[event.lat, event.lng]}>
-                    <Popup>
-                      {event.imageUrl}
-                      {event.location}
-                    </Popup>
+                  {/* <Marker position={[event.lat, event.lng]}> */}
+                  <Marker position={[51.505, -0.09]}>
+                    <Popup>{event.location}</Popup>
                   </Marker>
                 </MapContainer>
                 <hr />
@@ -217,40 +176,27 @@ const EventDetails: React.FC = () => {
         </Row>
 
         {/* Review Section */}
+        <Review eventId={0} userId={0} onReviewSubmit={handleReviewSubmit} />
+
         <Card className="my-4">
           <Card.Body>
-            <h5>Leave a Review</h5>
-            <Form>
-              <Form.Group controlId="formRating">
-                <Form.Label>Rating</Form.Label>
-                <StarRatings
-                  rating={review.rating}
-                  // starRatedColor="#7848F4"
-                  changeRating={handleRatingChange}
-                  numberOfStars={5}
-                  name="rating"
-                />
-              </Form.Group>
-              <Form.Group controlId="formComment">
-                <Form.Label>Comment</Form.Label>
-                <Form.Control
-                  as="textarea"
-                  rows={3}
-                  name="comment"
-                  value={review.comment}
-                  onChange={handleReviewChange}
-                />
-              </Form.Group>
-              <Button variant="primary" onClick={handleReviewSubmit}>
-                Submit Review
-              </Button>
-            </Form>
-            {reviewSubmitted && (
-              <p className="mt-3 text-success">
-                Review submitted successfully!
-              </p>
+            <h5>Reviews</h5>
+            {reviews.length > 0 ? (
+              reviews.map((review, index) => (
+                <div key={index}>
+                  <StarRatings
+                    rating={review.rating}
+                    starRatedColor="#7848F4"
+                    numberOfStars={5}
+                    name="rating"
+                  />
+                  <p>{review.comment}</p>
+                  <hr />
+                </div>
+              ))
+            ) : (
+              <p>No reviews yet.</p>
             )}
-            {reviewError && <p className="mt-3 text-danger">{reviewError}</p>}
           </Card.Body>
         </Card>
 
@@ -262,7 +208,8 @@ const EventDetails: React.FC = () => {
           <Modal.Body>
             <h5>Date & Time </h5>
             <p>
-              <FaCalendarAlt /> {event.date} at {event.time}
+              <FaCalendarAlt /> {new Date(event.startDate).toLocaleDateString()}{" "}
+              - {new Date(event.endDate).toLocaleDateString()}
             </p>
             <h5>Location</h5>
             <p>

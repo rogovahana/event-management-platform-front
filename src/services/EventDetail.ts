@@ -1,1 +1,0 @@
-// https://localhost:7136/api/Event

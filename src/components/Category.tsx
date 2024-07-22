@@ -1,25 +1,80 @@
-import React from "react";
+// import React, { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import "./Category.css";
+
+// type Category = {
+//   name: string;
+// };
+
+// const Category: React.FC = () => {
+//   const [categories, setCategories] = useState<Category[]>([]);
+//   const navigate = useNavigate();
+
+//   useEffect(() => {
+//     const fetchCategories = async () => {
+//       try {
+//         const response = await fetch("https://localhost:7136/api/Category");
+//         if (!response.ok) {
+//           throw new Error("Failed to fetch categories");
+//         }
+//         const data = await response.json();
+//         setCategories(data);
+//       } catch (error) {
+//         console.error(error);
+//       }
+//     };
+
+//     fetchCategories();
+//   }, []);
+
+//   const handleClick = (category: string) => {
+//     navigate(`/category/${category}`);
+//   };
+
+//   return (
+//     <div className="category-container">
+//       {categories.map((category) => (
+//         <div
+//           key={category.name}
+//           className="category-item"
+//           onClick={() => handleClick(category.name)}
+//         >
+//           <i className={`category-icon fas fa-tag`}></i>
+//           <p className="category-name">{category.name}</p>
+//         </div>
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default Category;
+// dummy data 
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Category.css";
 
 type Category = {
   name: string;
-  iconClass: string;
 };
 
-const categories: Category[] = [
-  { name: "Technology", iconClass: "fas fa-laptop" },
-  { name: "Nightlife", iconClass: "fas fa-cocktail" },
-  { name: "Music", iconClass: "fas fa-music" },
-  { name: "Art", iconClass: "fas fa-paint-brush" },
-  { name: "Sport", iconClass: "fas fa-basketball-ball" },
+const dummyCategories: Category[] = [
+  { name: "Technology" },
+  { name: "Food & Drink" },
+  { name: "Music" },
+  { name: "Art" },
+  { name: "Sport" },
 ];
 
 const Category: React.FC = () => {
+  const [categories, setCategories] = useState<Category[]>([]);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // Using dummy data for testing
+    setCategories(dummyCategories);
+  }, []);
+
   const handleClick = (category: string) => {
-    // Navigate to the proper page
     navigate(`/category/${category}`);
   };
 
@@ -31,7 +86,7 @@ const Category: React.FC = () => {
           className="category-item"
           onClick={() => handleClick(category.name)}
         >
-          <i className={`category-icon ${category.iconClass}`}></i>
+          <i className={`category-icon fas fa-tag`}></i>
           <p className="category-name">{category.name}</p>
         </div>
       ))}

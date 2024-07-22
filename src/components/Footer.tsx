@@ -29,9 +29,6 @@ function Footeri() {
             <a href="#" className="text-light mx-3" style={{ textDecoration: "none" }}>
               Events
             </a>
-            <a href="#" className="text-light mx-3" style={{ textDecoration: "none" }}>
-              Contact Us
-            </a>
           </Col>
         </Row>
         <Row className="mt-3">
