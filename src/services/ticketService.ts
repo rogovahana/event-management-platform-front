@@ -1,13 +1,13 @@
 const API_URL = 'http://backend-api';
 
-export const bookTickets = async (eventId: string, numTickets: number) => {
+export const bookTickets = async (eventId: string, numTickets: number, paymentMethodId: string) => {
   try {
     const response = await fetch(`${API_URL}/events/${eventId}/book`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ numTickets })
+      body: JSON.stringify({ numTickets, paymentMethodId })
     });
     if (!response.ok) {
       throw new Error('Failed to book tickets');
@@ -17,7 +17,6 @@ export const bookTickets = async (eventId: string, numTickets: number) => {
     console.error('Error booking tickets:', error);
     throw error;
   }
-  
 };
 
   export const fetchBookedTickets = async () => {
@@ -63,4 +62,6 @@ export const bookTickets = async (eventId: string, numTickets: number) => {
       throw error;
     }
   };
+
+  
 

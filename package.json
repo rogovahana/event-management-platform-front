@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.5.2",
+    "@stripe/react-stripe-js": "^2.7.3",
+    "@stripe/stripe-js": "^4.1.0",
     "add-to-calendar-button-react": "^2.6.18",
     "bootstrap": "^5.3.3",
     "leaflet": "^1.9.4",

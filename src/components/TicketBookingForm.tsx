@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { bookTickets } from '../services/ticketService';
 import Navbari from '../components/Navbar';
+import PaymentForm from './PaymentForm';  
 
 const TicketBookingForm: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
@@ -9,46 +9,50 @@ const TicketBookingForm: React.FC = () => {
   const [bookingSuccess, setBookingSuccess] = useState<boolean>(false);
   const [bookingError, setBookingError] = useState<string>('');
 
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleBookingSuccess = () => {
+    setBookingSuccess(true);
     setBookingError('');
-    setBookingSuccess(false);
-
-    if (!eventId) {
-      setBookingError('Invalid event ID');
-      return;
-    }
-
-    try {
-      await bookTickets(eventId, numTickets);
-      setBookingSuccess(true);
-    } catch (error) {
-      console.error('Failed to book tickets', error);
-      setBookingError('Failed to book tickets. Please try again later.');
-    }
   };
+
+  const handleBookingError = (error: string) => {
+    setBookingError(error);
+    setBookingSuccess(false);
+  };
+
+  if (!eventId) {
+    return <p>Invalid event ID</p>;
+  }
 
   return (
     <>
       <Navbari />
-      <div className="ticket-booking-container my-5">
+      <div className="container my-5">
         <h1 className="text-center mb-4">Book Tickets</h1>
-        <form onSubmit={handleFormSubmit} className="ticket-booking-form">
-          <div className="form-group mb-3">
-            <label htmlFor="numTickets">Number of Tickets</label>
-            <input
-              type="number"
-              id="numTickets"
-              value={numTickets}
-              onChange={(e) => setNumTickets(Number(e.target.value))}
-              className="form-control"
-              min={1}
-            />
+        <div className="card p-4 shadow-sm">
+          <div className="mb-4">
+            <h2 className="h4 mb-3">Select Number of Tickets</h2>
+            <div className="form-group mb-3">
+              <label htmlFor="numTickets" className="form-label">Number of Tickets</label>
+              <input
+                type="number"
+                id="numTickets"
+                value={numTickets}
+                onChange={(e) => setNumTickets(Number(e.target.value))}
+                className="form-control"
+                min={1}
+                required
+              />
+            </div>
           </div>
-          <button type="submit" className="btn btn-primary btn-block">Book Tickets</button>
-          {bookingSuccess && <p className="success-message">Tickets booked successfully!</p>}
-          {bookingError && <p className="error-message">{bookingError}</p>}
-        </form>
+          <PaymentForm
+            eventId={eventId}
+            numTickets={numTickets}
+            onSuccess={handleBookingSuccess}
+            onError={handleBookingError}
+          />
+          {bookingSuccess && <p className="text-success mt-3">Tickets booked successfully!</p>}
+          {bookingError && <p className="text-danger mt-3">{bookingError}</p>}
+        </div>
       </div>
     </>
   );
