@@ -11,9 +11,11 @@ import BrowseEventsPage from './pages/BrowseEventsPage';
 import CategoryEvents from './pages/Category/EventsbyCategory';
 import TicketBookingForm from './components/TicketBookingForm';
 import BookedTicketsPage from './pages/BookedTicketPage';
+import { ThemeProvider } from './contexts/ThemeContext';
 
 const AppRouter: React.FC = () => {
   return (
+    <ThemeProvider>
     <AuthProvider>
     <Router>
       <Routes>
@@ -30,6 +32,7 @@ const AppRouter: React.FC = () => {
       </Routes>
     </Router>
     </AuthProvider>
+    </ThemeProvider>
   );
 };
 
