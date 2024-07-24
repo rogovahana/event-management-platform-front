@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './BrowseEventsPage.css'; 
+import './BrowseEventsPage.css';
 import firstEvent from '../assets/events/event_1.webp';
 import secondEvent from '../assets/events/event_2.webp';
 import Navbari from '../components/Navbar';
 import Footeri from '../components/Footer';
 import { Dropdown, Modal, Container, Row, Col, Button, InputGroup, FormControl } from 'react-bootstrap';
-import { FaFacebook, FaTwitter, FaEnvelope, FaFacebookMessenger } from 'react-icons/fa';
-import Map from '../components/Map'; 
+import Map from '../components/Map';
+import { FacebookIcon, FacebookShareButton, TwitterIcon, TwitterShareButton, WhatsappIcon, WhatsappShareButton } from 'react-share';
+
 interface Event {
   id: number;
   title: string;
@@ -16,7 +17,7 @@ interface Event {
   description: string;
   location: string;
   imageUrl: string;
-  latitude: number; 
+  latitude: number;
   longitude: number;
 }
 
@@ -25,6 +26,8 @@ const BrowseEventsPage: React.FC = () => {
   const navigate = useNavigate();
   const [isSharePopupVisible, setSharePopupVisible] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+  const [searchText, setSearchText] = useState('');
+  const [accessToken, setAccessToken] = useState<string | null>(null); // Store access token from Auth0
 
   useEffect(() => {
     // Temporary, only to test before API is ready
@@ -62,9 +65,26 @@ const BrowseEventsPage: React.FC = () => {
         latitude: 51.525,
         longitude: -0.11, 
       },
-   
     ]);
   }, []);
+
+  const fetchEvents = async (query: string) => {
+    try {
+      const url = `https://localhost:7136/api/Event/search/${encodeURIComponent(query)}`;
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${accessToken}` // Include Auth0 access token in headers
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setEvents(data.events); // Assuming the API returns an array of events in the 'events' property
+    } catch (error) {
+      console.error('Error fetching events:', error);
+    }
+  };
 
   const handleEventClick = (eventId: number) => {
     navigate(`/events`);
@@ -79,6 +99,17 @@ const BrowseEventsPage: React.FC = () => {
     setSharePopupVisible(false);
   };
 
+  const handleSearchInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchText(event.target.value);
+  };
+
+  const handleSearchSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    fetchEvents(searchText);
+  };
+
+  const shareUrl = window.location.href;
+
   return (
     <>
       <Navbari />
@@ -88,6 +119,17 @@ const BrowseEventsPage: React.FC = () => {
             <div>
               <h1>Browse Events</h1>
             </div>
+            <form onSubmit={handleSearchSubmit} className="mb-3">
+              <InputGroup>
+                <FormControl
+                  type="text"
+                  placeholder="Search events..."
+                  value={searchText}
+                  onChange={handleSearchInputChange}
+                />
+                <Button variant="primary" type="submit">Search</Button>
+              </InputGroup>
+            </form>
             <div className="filters-row mb-3">
               <div className="filter-item">
                 <Dropdown>
@@ -170,12 +212,7 @@ const BrowseEventsPage: React.FC = () => {
                         <path fillRule="evenodd" clipRule="evenodd" d="M10.8232 5.23741C10.9807 5.07992 11.25 5.19146 11.25 5.41419L11.25 14.25C11.25 14.6642 11.5858 15 12 15C12.4142 15 12.75 14.6642 12.75 14.25V5.41418C12.75 5.19146 13.0193 5.07992 13.1768 5.23741L15.9697 8.0303C16.2626 8.32319 16.7374 8.32319 17.0303 8.0303C17.3232 7.73741 17.3232 7.26253 17.0303 6.96964L13.2374 3.17675C12.554 2.49333 11.446 2.49333 10.7626 3.17675L6.96967 6.96964C6.67678 7.26253 6.67678 7.73741 6.96967 8.0303C7.26256 8.32319 7.73744 8.32319 8.03033 8.0303L10.8232 5.23741ZM9.25 10H6C4.89543 10 4 10.8954 4 12V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V12C20 10.8954 19.1046 10 18 10H14.75V11.5H18C18.2761 11.5 18.5 11.7239 18.5 12V20C18.5 20.2761 18.2761 20.5 18 20.5H6C5.72386 20.5 5.5 20.2761 5.5 20V12C5.5 11.7239 5.72386 11.5 6 11.5H9.25V10Z"></path>
                       </svg>
                     </a>
-                    <a href="">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="black" className="injected-svg fill-current" data-src="https://secure.meetupstatic.com/next/images/design-system-icons/bookmark-outline.svg" xmlnsXlink="http://www.w3.org/1999/xlink" data-icon="icon-1538">
-                        <title>Save event</title>
-                        <path fillRule="evenodd" clipRule="evenodd" d="M18 3.5H6C5.72386 3.5 5.5 3.72386 5.5 4V19.573L10.4348 17.1056C11.4201 16.6129 12.5799 16.6129 13.5652 17.1056L18.5 19.5729V4C18.5 3.72386 18.2761 3.5 18 3.5ZM6 2C4.89543 2 4 2.89543 4 4V20.382C4 21.1253 4.78231 21.6088 5.44721 21.2764L11.1056 18.4472C11.6686 18.1657 12.3314 18.1657 12.8944 18.4472L18.5528 21.2764C19.2177 21.6088 20 21.1253 20 20.382V4C20 2.89543 19.1046 2 18 2H6Z"/>
-                      </svg>
-                    </a>
+                    {/* Bookmark icon */}
                   </div>
                 </div>
               ))}
@@ -187,48 +224,28 @@ const BrowseEventsPage: React.FC = () => {
           </div>
         </div>
       </div>
-
       <Footeri />
-
       <Modal show={isSharePopupVisible} onHide={handleClosePopup} centered>
         <Modal.Header closeButton>
           <Modal.Title>Share with friends</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {selectedEvent && (
+        {selectedEvent && (
             <Container>
               <Row className="mb-3">
-                <Col md={12} className="text-center">
-                  <a href={`https://www.facebook.com/sharer/sharer.php?u=link/here`} target="_blank" rel="noopener noreferrer">
-                    <FaFacebook size={24} />
-                  </a>
-                  <a href={`https://twitter.com/intent/tweet?url=link/here`} target="_blank" rel="noopener noreferrer">
-                    <FaTwitter size={24} />
-                  </a>
-                  <a href={`mailto:?subject=Check%20out%20this%20event&body=link/here`} target="_blank" rel="noopener noreferrer">
-                    <FaEnvelope size={24} />
-                  </a>
-                  <a href={`https://m.me/?link=link/here`} target="_blank" rel="noopener noreferrer">
-                    <FaFacebookMessenger size={24} />
-                  </a>
+                <Col md={12} className="text-center d-flex justify-content-center gap-3">
+                  <FacebookShareButton url={shareUrl}>
+                    <FacebookIcon size={32} round />
+                  </FacebookShareButton>
+                  <TwitterShareButton url={shareUrl}>
+                    <TwitterIcon size={32} round />
+                  </TwitterShareButton>
+                  <WhatsappShareButton url={shareUrl}>
+                    <WhatsappIcon size={32} round />
+                  </WhatsappShareButton>
                 </Col>
               </Row>
-              {/* <Row>
-                <Col md={12} className="text-center">
-                  <InputGroup>
-                    <FormControl
-                      readOnly
-                      value={`link/here`}
-                    />
-                    <Button
-                      variant="outline-secondary"
-                      onClick={() => navigator.clipboard.writeText(`link/here`)}
-                    >
-                      Copy
-                    </Button>
-                  </InputGroup>
-                </Col>
-              </Row> */}
+              {/* Copy link section */}
             </Container>
           )}
         </Modal.Body>

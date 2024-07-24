@@ -86,8 +86,10 @@ const Category: React.FC = () => {
           className="category-item"
           onClick={() => handleClick(category.name)}
         >
-          <i className={`category-icon fas fa-tag`}></i>
-          <p className="category-name">{category.name}</p>
+          <div className="category-item-inner">
+            <i className={`category-icon fas fa-tag`}></i>
+            <p className="category-name">{category.name}</p>
+          </div>
         </div>
       ))}
     </div>
