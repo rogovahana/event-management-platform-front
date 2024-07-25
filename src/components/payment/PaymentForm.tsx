@@ -1,8 +1,9 @@
 import React from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { useTheme } from '../contexts/ThemeContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import { Button, Form, Container, Row, Col } from 'react-bootstrap';
-import { bookTickets } from '../services/ticketService';
+import { bookTickets } from '../../services/ticketService';
+import { useNavigate } from 'react-router-dom';
 
 interface PaymentFormProps {
   eventId: string;
@@ -15,6 +16,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ eventId, numTickets, onSucces
   const stripe = useStripe();
   const elements = useElements();
   const { theme } = useTheme();
+  const navigate = useNavigate();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -42,6 +44,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ eventId, numTickets, onSucces
       } else {
         await bookTickets(eventId, numTickets, paymentMethod.id);
         onSuccess();
+        navigate('/payment-success');
       }
     } catch (err) {
       onError('Failed to book tickets. Please try again later.');
@@ -52,7 +55,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ eventId, numTickets, onSucces
     <Container className="payment-form-container mt-4">
       <Row className="justify-content-center">
         <Col md={8} lg={6}>
-          <div className="card p-4 shadow-sm">
+          <div className={`card p-4 shadow-sm ${theme === 'dark' ? 'bg-dark text-white' : 'bg-light text-dark'}`}>
             <h3 className="mb-4 text-center">Payment Details</h3>
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">

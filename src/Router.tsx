@@ -14,6 +14,7 @@ import BookedTicketsPage from './pages/BookedTicketPage';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
+import PaymentSuccessPage from './components/payment/PaymentSuccesPage';
 
 const stripePromise = loadStripe('pk_test_51Pg6AGRoUDy3c6g6o4DExb5E8NfDGIqRgx7KxuvnZquzQ8YFqUGGedRlF5x1y1YJQ8SBdLEOOvDzzlQyevesXsYS00xuVTYJ38');
 
@@ -29,6 +30,7 @@ const AppRouter: React.FC = () => {
             <Route path="/sign-up" element={<SignUpPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/browse-events" element={<BrowseEventsPage />} />
+            <Route path="/payment-success" element={<PaymentSuccessPage />} />
             <Route path="/events" element={<EventDetails />} />
             <Route path="/category/:category" element={<CategoryEvents />} />
             <Route 

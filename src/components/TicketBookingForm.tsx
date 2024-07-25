@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbari from '../components/Navbar';
-import PaymentForm from './PaymentForm';  
+import PaymentForm from './payment/PaymentForm';  
 
 const TicketBookingForm: React.FC = () => {
   const { eventId } = useParams<{ eventId: string }>();
