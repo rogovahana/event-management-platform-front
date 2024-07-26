@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { fetchEvents, deleteEvent, updateEvent } from '../services/eventService';
+import { fetchEvents, deleteEvent, updateEvent } from '../../services/eventService';
 import './ManageEventsPage.css';
-import Navbari from '../components/Navbar';
+import Navbari from '../../components/Navbar';
 
 const ManageEventsPage: React.FC = () => {
   const [events, setEvents] = useState<any[]>([]);

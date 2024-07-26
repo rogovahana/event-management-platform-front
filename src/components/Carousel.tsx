@@ -1,7 +1,5 @@
 import { useState, useEffect } from "react";
 import Carousel from "react-bootstrap/Carousel";
-import Modal from "react-bootstrap/Modal";
-import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
@@ -12,7 +10,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CreateEventButton from "./CreateEventButton";
-import Category from "../components/Category";
+import Category from "./Category";
 
 type Event = {
   title: string;
@@ -24,7 +22,6 @@ function Carouseli() {
   const [events, setEvents] = useState<Event[]>([]);
 
   useEffect(() => {
-    // Hardcode events data
     const eventData: Event[] = [
       {
         title: "Sample Event 1",
@@ -47,7 +44,7 @@ function Carouseli() {
 
       <div className="carousel-container position-relative">
         <Carousel>
-          {events.map((event, index) => (
+        {events.map((_event, index) => (
             <Carousel.Item key={index}>
               <img
                 className="d-block w-100"
@@ -60,12 +57,10 @@ function Carouseli() {
           ))}
         </Carousel>
  
-        <div className="position-absolute bottom-0 start-50 translate-middle-x w-100">
-          <SearchEvent />
-        </div>
-        <div className="d-md-none">
-          <SearchEvent />
-        </div>
+       
+      </div>
+      <div className="search-event-section mt-4">
+        <SearchEvent />
       </div>
       <Category />
       <div className="create-event-section bg-light p-4 mt-5">
@@ -77,15 +72,6 @@ function Carouseli() {
             <Col xs={12} md={8} className="text-center text-md-left">
               <h3 className="mb-3">Create Your Next Event</h3>
               <CreateEventButton />
-              {/* <Link to="/create-event">
-                <Button
-                  size="lg"
-                  className="create-event-button"
-                  style={{ backgroundColor: "#7848F4" }}
-                >
-                  <i className="fas fa-plus-circle mr-2"></i> Create an Event
-                </Button>
-              </Link> */}
             </Col>
           </Row>
         </Container>

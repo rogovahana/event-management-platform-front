@@ -1,0 +1,38 @@
+
+.search-event-container {
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .search-event-container .form-control,
+  .search-event-container .form-select {
+    border-radius: 50px;
+    padding: 10px 20px;
+  }
+  
+  .search-event-container .btn {
+    border-radius: 50px;
+    padding: 10px 20px;
+  }
+  
+  .search-event-container .row .col {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .search-results-container {
+    padding-top: 20px;
+  }
+  .no-results {
+  text-align: center;
+  font-size: 1.2em;
+  color: #666;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  margin-top: 20px;
+}

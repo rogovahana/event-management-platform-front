@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { Container, Row, Col, Button, Card, Modal } from "react-bootstrap";
-import { FaCalendarAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { AddToCalendarButton } from 'add-to-calendar-button-react';
+import { FaCalendarAlt, FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import {
   FacebookShareButton,
   TwitterShareButton,
@@ -12,16 +14,15 @@ import {
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import Navbari from "../components/Navbar";
-import Footer from "../components/Footer";
-import AddToCalendarComponent from "../components/AddtoCalendarButton";
-import Review from "../components/Review";
+import Navbari from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import BookingModal from "../../components/BookingModal";
 
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
-import StarRatings from "react-star-ratings";
+import ReviewComponent from "../../components/Review";
 
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
@@ -38,49 +39,30 @@ interface EventDetails {
   categoryId: number;
   cityId: number;
   attendees: number;
-  images: { imageUrl: string }[];
-}
-
-interface Review {
-  userId: number;
-  eventId: number;
-  rating: number;
-  comment: string;
 }
 
 const EventDetails: React.FC = () => {
+  const { eventId } = useParams<{ eventId: string }>(); // Get eventId from URL
   const [event, setEvent] = useState<EventDetails | null>(null);
-  const [showModal, setShowModal] = useState(false);
-  const [showSignupModal, setShowSignupModal] = useState(false);
-  const [reviews, setReviews] = useState<Review[]>([]);
+  const [showBookingModal, setShowBookingModal] = useState(false); // State for BookingModal
 
   useEffect(() => {
-    // Dummy event data
-    const dummyEvent: EventDetails = {
-      title: "Sample Event",
-      description: "This is a description of the sample event.",
-      startDate: "2024-07-21T22:15:05.908Z",
-      endDate: "2024-07-21T22:15:05.908Z",
-      location: "123 Sample Street, Sample City",
-      categoryId: 1,
-      cityId: 1,
-      attendees: 150,
-      images: [
-        {
-          imageUrl: "https://via.placeholder.com/800x400.png?text=Event+Image",
-        },
-      ],
+    const fetchEventDetails = async () => {
+      console.log(`Fetching details for event ID: ${eventId}`);
+      try {
+        const response = await fetch(`https://localhost:7136/api/Event/${eventId}`);
+        const data: EventDetails = await response.json();
+        setEvent(data);
+      } catch (error) {
+        console.error("Error fetching event details:", error);
+      }
     };
-    setEvent(dummyEvent);
-  }, []);
 
-  const handleClose = () => setShowModal(false);
-  const handleSignupClose = () => setShowSignupModal(false);
-  const handleSignupShow = () => setShowSignupModal(true);
+    fetchEventDetails();
+  }, [eventId]);
 
-  const handleReviewSubmit = (review: Review) => {
-    setReviews([...reviews, review]);
-  };
+  const handleBookingModalClose = () => setShowBookingModal(false);
+  const handleBookingModalShow = () => setShowBookingModal(true);
 
   const shareUrl = window.location.href;
 
@@ -99,7 +81,7 @@ const EventDetails: React.FC = () => {
           <Row noGutters>
             <Col md={8}>
               <Card.Img
-                src={event.images[0].imageUrl}
+                src="https://via.placeholder.com/800x400.png?text=Event+Image" 
                 alt="Event Image"
                 className="img-fluid"
               />
@@ -112,12 +94,21 @@ const EventDetails: React.FC = () => {
                   <FaCalendarAlt />{" "}
                   {new Date(event.startDate).toLocaleDateString()} -{" "}
                   {new Date(event.endDate).toLocaleDateString()} <br />
+                  <FaClock />{new Date(event.endDate).toLocaleTimeString()} <br />
                   <FaMapMarkerAlt /> {event.location}
                 </p>
-                <Button variant="primary" onClick={handleSignupShow}>
+                <Button variant="primary" onClick={handleBookingModalShow}>
                   Book Now
                 </Button>
-                <AddToCalendarComponent />
+                <AddToCalendarButton
+                  name={event.title}
+                  startDate={event.startDate}
+                  endDate={event.endDate}
+                  startTime={new Date(event.startDate).toLocaleTimeString()}
+                  endTime={new Date(event.endDate).toLocaleTimeString()}
+                  location={event.location}
+                  description={event.description}
+                />
               </Card.Body>
             </Col>
           </Row>
@@ -134,7 +125,10 @@ const EventDetails: React.FC = () => {
                 <p>{event.attendees}</p>
               </Card.Body>
             </Card>
+
+            <ReviewComponent />
           </Col>
+          
           <Col md={4}>
             <Card className="my-4">
               <Card.Body>
@@ -143,8 +137,7 @@ const EventDetails: React.FC = () => {
                 </h5>
 
                 <MapContainer
-                  // lng lat or city?
-                  center={[51.505, -0.09]}
+                  center={[51.505, -0.09]} 
                   zoom={15}
                   style={{ height: "400px", width: "100%" }}
                 >
@@ -152,8 +145,7 @@ const EventDetails: React.FC = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
-                  {/* <Marker position={[event.lat, event.lng]}> */}
-                  <Marker position={[51.505, -0.09]}>
+                  <Marker position={[51.505, -0.09]}> 
                     <Popup>{event.location}</Popup>
                   </Marker>
                 </MapContainer>
@@ -175,61 +167,12 @@ const EventDetails: React.FC = () => {
           </Col>
         </Row>
 
-        {/* Review Section */}
-        <Review eventId={0} userId={0} onReviewSubmit={handleReviewSubmit} />
-
-        <Card className="my-4">
-          <Card.Body>
-            <h5>Reviews</h5>
-            {reviews.length > 0 ? (
-              reviews.map((review, index) => (
-                <div key={index}>
-                  <StarRatings
-                    rating={review.rating}
-                    starRatedColor="#7848F4"
-                    numberOfStars={5}
-                    name="rating"
-                  />
-                  <p>{review.comment}</p>
-                  <hr />
-                </div>
-              ))
-            ) : (
-              <p>No reviews yet.</p>
-            )}
-          </Card.Body>
-        </Card>
-
-        {/* Event Details Modal */}
-        <Modal show={showModal} onHide={handleClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>{event.title}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <h5>Date & Time </h5>
-            <p>
-              <FaCalendarAlt /> {new Date(event.startDate).toLocaleDateString()}{" "}
-              - {new Date(event.endDate).toLocaleDateString()}
-            </p>
-            <h5>Location</h5>
-            <p>
-              <FaMapMarkerAlt /> {event.location}
-            </p>
-          </Modal.Body>
-        </Modal>
-        <Modal show={showSignupModal} onHide={handleSignupClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Sign up</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>
-              Already a member? <a href="/login">Log in</a>
-            </p>
-          </Modal.Body>
-        </Modal>
+        {/* Booking Modal */}
+        <BookingModal show={showBookingModal} handleClose={handleBookingModalClose} />
       </Container>
       <Footer />
     </>
   );
 };
+
 export default EventDetails;

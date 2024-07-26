@@ -1,8 +1,8 @@
-export const fetchEvents = async (eventType: string, location: string, dateTime: string) => {
-    const response = await fetch(`/api/events?eventType=${eventType}&location=${location}&dateTime=${dateTime}`);
-    if (!response.ok) {
-      throw new Error('Failed to fetch events');
-    }
-    return response.json();
-  };
-  
+export const fetchEvents = async (filters: { searchText: string, cityId: string, categoryId: string }) => {
+  const params = new URLSearchParams(filters).toString();
+  const response = await fetch(`https://localhost:7136/api/Event/filter?${params}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch events');
+  }
+  return response.json();
+};

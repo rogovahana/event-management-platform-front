@@ -1,21 +1,60 @@
-.card-container {
-  transition: transform 0.3s ease-in-out;
+.event-card {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  border: none;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.card-container:hover {
+.event-card:hover {
   transform: translateY(-5px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.loading {
-  text-align: center;
-  font-size: 1.5rem;
-  color: #000000;
+.event-card .card-body {
+  padding: 1.5rem;
 }
 
-.loading,
-.no-events {
+.card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.card-text {
+  font-size: 0.875rem;
+  color: #555;
+}
+
+.button-primary {
+  background-color: #7848F4;
+  border: none;
+  padding: 0.5rem 1rem;
+}
+
+.button-primary:hover {
+  background-color: #6f3ebc;
+}
+
+.loading, .no-events {
   text-align: center;
   font-size: 1.5rem;
   color: #333;
   margin-top: 20px;
+}
+
+@media (max-width: 767px) {
+  .event-card {
+    margin-bottom: 1rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  .event-card {
+    margin-bottom: 2rem;
+  }
+}
+
+@media (min-width: 992px) {
+  .event-card {
+    margin-bottom: 3rem;
+  }
 }
