@@ -1,151 +1,20 @@
-import React, { useState } from 'react';
-import loginImg from '../assets/login_img.jpg';
-import googleLogo from '../assets/google_logo.png';
-import { Form, Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from './AuthContext';
-import './AuthPage.css';
+import React from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
+import { Button, Container, Row, Col } from 'react-bootstrap';
 
 const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [submitting, setSubmitting] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-  const { signIn } = useAuth();
-  const navigate = useNavigate();
+  const { loginWithRedirect } = useAuth0();
 
-  const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setSubmitting(true);
-
-    let isFormValid = true;
-
-    if (!email.trim()) {
-      setEmailError('Email is required.');
-      isFormValid = false;
-    } else {
-      setEmailError('');
-    }
-
-    if (!password.trim()) {
-      setPasswordError('Password is required.');
-      isFormValid = false;
-    } else {
-      setPasswordError('');
-    }
-
-    if (!isFormValid) {
-      setSubmitting(false);
-      return;
-    }
-
-    try {
-      const response = await fetch('https://localhost:7136/api/Auth/Login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      if (response.ok) {
-        const { userId, token } = await response.json();
-        //  saing the token in local storage
-        localStorage.setItem('authToken', token);
-        const userResponse = await fetch(`https://localhost:7136/api/User/${userId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Accept': 'application/json',
-          },
-        });
-
-        if (userResponse.ok) {
-          const user = await userResponse.json();
-          signIn(user);
-          alert('Login successful!');
-          setEmail('');
-          setPassword('');
-          setSubmitError('');
-          navigate('/create-event');
-        } else {
-          const errorData = await userResponse.json();
-          setSubmitError(errorData.message || 'Failed to fetch user details');
-        }
-      } else {
-        const errorData = await response.json();
-        setSubmitError(errorData.message || 'Failed to log in');
-      }
-    } catch (error) {
-      setSubmitError('An error occurred. Please try again later.');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return ( 
-    <div className="w-100 d-flex justify-content-center align-content-center">
-      <div className="main-content w-md-75 w-90 my-md-3">
-        <div className="sub-content">
-          <h2>
-            Event<span style={{ color: "#7848F4" }}>Hive</span>
-          </h2>
-          <h3>Log in to Event Hive</h3>
-          <Form className="form" onSubmit={handleFormSubmit}>
-            <div>
-              <Form.Label htmlFor="formEmail"></Form.Label>
-              <Form.Control
-                type="email"
-                id="formEmail"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setEmailError('');
-                }}
-                isInvalid={!!emailError}
-              />
-              <Form.Control.Feedback type="invalid">{emailError}</Form.Control.Feedback>
-            </div>
-
-            <div>
-              <Form.Label htmlFor="formPassword"></Form.Label>
-              <Form.Control
-                type="password"
-                id="formPassword"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  setPasswordError('');
-                }}
-                isInvalid={!!passwordError}
-              />
-              <Form.Control.Feedback type="invalid">{passwordError}</Form.Control.Feedback>
-            </div>
-
-            <Button className="w-50 mx-auto" type="submit" disabled={submitting}>
-              {submitting ? 'Logging In...' : 'Log in'}
-            </Button>
-
-            {submitError && <div className="text-danger text-center mt-2">{submitError}</div>}
-
-            <div className="text-center">Or</div>
-
-            <Button type="button" className="google-btn">
-              <img src={googleLogo} alt="Google" className="google-logo" />
-              Log in with Google
-            </Button>
-          </Form>
-        </div>
-      </div>
-      <div className="main-img d-none d-lg-block">
-        <img src={loginImg} alt="Event" className="image" />
-      </div>
-    </div>
+  return (
+    <Container>
+      <Row className="justify-content-md-center">
+        <Col md="auto">
+          <h2>Login</h2>
+          <Button onClick={() => loginWithRedirect()}>Log In</Button>
+        </Col>
+      </Row>
+    </Container>
   );
 };
 
 export default LoginPage;
-

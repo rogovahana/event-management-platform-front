@@ -1,38 +1,41 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode } from 'react';
+import { Auth0Provider } from '@auth0/auth0-react';
+import config from '../../auth_config.json';
 
-interface AuthContextType {
-  user: any;
-  signIn: (user: any) => void;
-  signOut: () => void;
-  isSignedUp: boolean;
-  setSignedUp: (signedUp: boolean) => void;
+interface AuthProviderProps {
+  children: ReactNode;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext(null);
 
-export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<any>(null);
-  const [isSignedUp, setIsSignedUp] = useState<boolean>(false);
-
-  const signIn = (user: any) => {
-    setUser(user);
-  };
-
-  const signOut = () => {
-    setUser(null);
+export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+  const onRedirectCallback = (appState: any) => {
+    window.history.replaceState(
+      {},
+      document.title,
+      appState && appState.returnTo ? appState.returnTo : window.location.pathname
+    );
   };
 
   return (
-    <AuthContext.Provider value={{ user, signIn, signOut, isSignedUp, setSignedUp: setIsSignedUp }}>
+    <Auth0Provider
+      domain={config.domain}
+      clientId={config.clientId}
+      authorizationParams={{
+        redirect_uri: window.location.origin,
+        audience: config.audience,
+      }}
+      onRedirectCallback={onRedirectCallback}
+    >
       {children}
-    </AuthContext.Provider>
+    </Auth0Provider>
   );
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+  const auth = useContext(AuthContext);
+  if (auth === null) {
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context;
+  return auth;
 };
