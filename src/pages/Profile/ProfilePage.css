@@ -1,0 +1,57 @@
+.profile-page .flex-column {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; 
+    background-color: #f8f9fa; 
+    padding: 1rem;
+}
+
+.profile-page .flex-column .nav-link {
+    margin-bottom: 1rem;
+}
+
+.profile-page .flex-column {
+    margin-top: auto;
+}
+  
+
+.profile-photo {
+    width: 100%;
+    height: 200px; 
+    background-color: #f0f0f0; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px dashed #ced4da;
+    padding: 40px;
+    text-align: center;
+    color: #007bff;
+}
+
+.profile-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+}
+  
+.profile-photo p {
+    margin: 0;
+}
+
+.save-button {
+    margin-top: 20px;
+    border: none;
+}
+
+h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+h3 {
+    font-size: 1.5rem;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}

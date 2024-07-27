@@ -8,6 +8,7 @@ import LoginPage from './authentication/LoginPage';
 import EventDetails from './pages/EventDetails/EventDetail';
 import { Auth0Provider } from '@auth0/auth0-react';
 import BrowseEventsPage from './pages/BrowseEvents/BrowseEventsPage';
+import ProfilePage from './pages/Profile/ProfilePage';
 import CategoryEvents from './pages/EventCategory/EventsbyCategory';
 import TicketBookingForm from './components/TicketBookingForm';
 import BookedTicketsPage from './pages/BookedTicketPage';
@@ -37,6 +38,7 @@ const AppRouter: React.FC = () => {
             <Route path="/sign-up" element={<SignUpPage />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/browse-events" element={<BrowseEventsPage />} />
+            <Route path="/profile-page" element={<ProfilePage />} />
             <Route path="/payment-success" element={<PaymentSuccessPage />} />
             <Route path="/event/:eventId" element={<EventDetails />} />
             <Route path="/category/:category" element={<CategoryEvents />} /> 
