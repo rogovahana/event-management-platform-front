@@ -10,7 +10,9 @@ const SignUpPage: React.FC = () => {
       <Row className="justify-content-md-center">
         <Col md="auto">
           <h2>Sign Up</h2>
-          <Button onClick={() => loginWithRedirect({ authorizationParams: { screen_hint: 'signup' } })}/>
+          <Button onClick={() => loginWithRedirect({ authorizationParams: { screen_hint: 'signup' } })}>
+            Sign Up
+          </Button>
         </Col>
       </Row>
     </Container>

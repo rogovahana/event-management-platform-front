@@ -1,19 +1,32 @@
-import React, { createContext, useContext, ReactNode } from 'react';
-import { Auth0Provider } from '@auth0/auth0-react';
+
+import { createContext, useContext, ReactNode, FC } from 'react';
+import { Auth0Provider, AppState } from '@auth0/auth0-react';
 import config from '../../auth_config.json';
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthContext = createContext(null);
+interface User {
+  username?: string;
+  email?: string;
+}
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const onRedirectCallback = (appState: any) => {
+interface AuthContextProps {
+  isAuthenticated: boolean;
+  user: User;
+  loginWithRedirect: () => void;
+  logout: () => void;
+}
+
+export const AuthContext = createContext<AuthContextProps | null>(null);
+
+export const AuthProvider: FC<AuthProviderProps> = ({ children }) => {
+  const onRedirectCallback = (appState?: AppState) => {
     window.history.replaceState(
       {},
       document.title,
-      appState && appState.returnTo ? appState.returnTo : window.location.pathname
+      appState && appState.returnTo ? appState.returnTo : "http://localhost:5173/"
     );
   };
 
@@ -22,8 +35,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       domain={config.domain}
       clientId={config.clientId}
       authorizationParams={{
-        redirect_uri: window.location.origin,
+        redirect_uri: 'http://localhost:5173',
         audience: config.audience,
+        scope: "openid profile"
       }}
       onRedirectCallback={onRedirectCallback}
     >
@@ -35,7 +49,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 export const useAuth = () => {
   const auth = useContext(AuthContext);
   if (auth === null) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return auth;
 };

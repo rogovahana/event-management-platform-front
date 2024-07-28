@@ -1,16 +1,18 @@
 import React from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
+import authService from './AuthService';
 import { Button, Container, Row, Col } from 'react-bootstrap';
 
 const LoginPage: React.FC = () => {
-  const { loginWithRedirect } = useAuth0();
+  const handleLogin = () => {
+    authService.login();
+  };
 
   return (
     <Container>
       <Row className="justify-content-md-center">
         <Col md="auto">
-          <h2>Login</h2>
-          <Button onClick={() => loginWithRedirect()}>Log In</Button>
+          <h2>Log In</h2>
+          <Button onClick={handleLogin}>Log In</Button>
         </Col>
       </Row>
     </Container>
