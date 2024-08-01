@@ -14,7 +14,9 @@ const Category: React.FC = () => {
     const fetchCategories = async () => {
       try {
         const response = await fetch("https://localhost:7136/api/Category");
+         // Check if the response status is OK
         if (!response.ok) {
+          // if was not successful
           throw new Error("Failed to fetch categories");
         }
         const data = await response.json();
@@ -23,7 +25,7 @@ const Category: React.FC = () => {
         console.error(error);
       }
     };
-
+    //load data
     fetchCategories();
   }, []);
 

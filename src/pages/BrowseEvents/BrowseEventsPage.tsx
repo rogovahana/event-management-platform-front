@@ -1,28 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './BrowseEventsPage.css';
-import Navbari from '../../components/Navbar';
-import Footeri from '../../components/Footer';
+import Navbari from '../../components/Navbar/Navbar';
+import Footeri from '../../components/Footer/Footer';
 import { Dropdown, Modal, Container, Row, Col, Button, FormControl, InputGroup } from 'react-bootstrap';
 import { FaFacebook, FaTwitter, FaEnvelope, FaFacebookMessenger } from 'react-icons/fa';
-import { fetchEvents } from '../../services/BrowseService';
 import Map from '../../components/Map';
 
+
+// Event object
 interface Event {
   id: number;
   title: string;
-  date: string;
-  time: string;
   description: string;
+  startDate: string;
+  endDate: string;
   location: string;
   imageUrl: string;
-  latitude: number;
-  longitude: number;
   cityId: number;
   categoryId: number;
+  availableTickets: number;
+  attendees: number;
 }
 
+
+// Functional component for browsing events
 const BrowseEventsPage: React.FC = () => {
+   // State variables
   const [events, setEvents] = useState<Event[]>([]);
   const [cityId, setCityId] = useState<number | null>(null);
   const [categoryId, setCategoryId] = useState<number | null>(null);
@@ -35,24 +39,32 @@ const BrowseEventsPage: React.FC = () => {
   useEffect(() => {
     const getEvents = async () => {
       try {
-        const data = await fetchEvents();
+        const response = await fetch('https://localhost:7136/api/Event');
+        if (!response.ok) {
+          throw new Error('Network response was not ok' + response.statusText);
+        }
+        const data = await response.json();
         const formattedEvents = data.map((event: any) => ({
           id: event.id,
           title: event.title,
-          date: new Date(event.startDate).toLocaleDateString(),
-          time: new Date(event.startDate).toLocaleTimeString(),
           description: event.description,
+          startDate: new Date(event.startDate).toLocaleDateString(),
+          endDate: new Date(event.endDate).toLocaleDateString(),
           location: event.location,
-          imageUrl: event.images[0] || '',
-          latitude: event.latitude,
-          longitude: event.longitude,
+          imageUrl: event.imageUrl,
           cityId: event.cityId,
           categoryId: event.categoryId,
+          availableTickets: event.availableTickets,
+          attendees: event.attendees,
         }));
+
         const filteredEvents = formattedEvents.filter((event: { cityId: number; categoryId: number; title: string; description: string; }) => {
           return (
-            (cityId === null || event.cityId === cityId) &&
+            // Check if cityId is null or if the event's cityId matches the specified cityId
+            (cityId === null || event.cityId === cityId) && 
+               // Check if categoryId is null or if the event's categoryId matches the specified categoryId
             (categoryId === null || event.categoryId === categoryId) &&
+            // Check if the searchTerm is empty or if the event's title or description contains the searchTerm
             (searchTerm === '' || event.title.toLowerCase().includes(searchTerm.toLowerCase()) || event.description.toLowerCase().includes(searchTerm.toLowerCase()))
           );
         });
@@ -70,7 +82,7 @@ const BrowseEventsPage: React.FC = () => {
   const handleEventClick = (eventId: number) => {
     navigate(`/event/${eventId}`);
   };
-
+// Show share popup and set the selected event
   const handleShareClick = (event: Event) => {
     setSelectedEvent(event);
     setSharePopupVisible(true);
@@ -89,7 +101,7 @@ const BrowseEventsPage: React.FC = () => {
               <h1>Browse Events</h1>
             </div>
             <InputGroup className="mb-3">
-            <FormControl
+              <FormControl
                 placeholder="Search for events"
                 aria-label="Search for events"
                 aria-describedby="basic-addon2"
@@ -144,8 +156,10 @@ const BrowseEventsPage: React.FC = () => {
                       <img src={event.imageUrl} alt={event.title} />
                       <div className="card-content">
                         <h3>{event.title}</h3>
-                        <p>{event.date} at {event.time}</p>
+                        <p>{event.startDate} to {event.endDate}</p>
                         <p>{event.location}</p>
+                        <p>Available Tickets: {event.availableTickets}</p>
+                        <p>Attendees: {event.attendees}</p>
                       </div>
                     </div>
                     <div className="card-icons">
@@ -170,40 +184,46 @@ const BrowseEventsPage: React.FC = () => {
               <Map events={events} />
             </div>
           </div>
-          <Modal show={isSharePopupVisible} onHide={handleClosePopup}>
-            <Modal.Header closeButton>
-              <Modal.Title>Share Event</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              {selectedEvent && (
-                <Container>
-                  <Row>
-                    <Col>
-                      <Button className="btn-facebook" href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`}>
-                        <FaFacebook /> Facebook
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Button className="btn-twitter" href={`https://twitter.com/intent/tweet?text=${selectedEvent.title}&url=${window.location.href}`}>
-                        <FaTwitter /> Twitter
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Button className="btn-messenger" href={`fb-messenger://share?link=${window.location.href}`}>
-                        <FaFacebookMessenger /> Messenger
-                      </Button>
-                    </Col>
-                    <Col>
-                      <Button className="btn-email" href={`mailto:?subject=${selectedEvent.title}&body=${window.location.href}`}>
-                        <FaEnvelope /> Email
-                      </Button>
-                    </Col>
-                  </Row>
-                </Container>
-              )}
-            </Modal.Body>
-          </Modal>
         </div>
+        <Modal show={isSharePopupVisible} onHide={handleClosePopup}>
+          <Modal.Header closeButton>
+            <Modal.Title>Share Event</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {selectedEvent && (
+              <Container>
+                <Row>
+                  <Col>
+                    <h3>{selectedEvent.title}</h3>
+                    <p>{selectedEvent.description}</p>
+                  </Col>
+                </Row>
+                <Row>
+                  <Col>
+                    <Button variant="outline-primary" href={`https://www.facebook.com/sharer/sharer.php?u=${window.location.href}`} target="_blank">
+                      <FaFacebook /> Share on Facebook
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button variant="outline-primary" href={`https://twitter.com/intent/tweet?text=${selectedEvent.title}&url=${window.location.href}`} target="_blank">
+                      <FaTwitter /> Share on Twitter
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button variant="outline-primary" href={`mailto:?subject=${selectedEvent.title}&body=${selectedEvent.description} %0A ${window.location.href}`} target="_blank">
+                      <FaEnvelope /> Share via Email
+                    </Button>
+                  </Col>
+                  <Col>
+                    <Button variant="outline-primary" href={`https://m.me/?link=${window.location.href}`} target="_blank">
+                      <FaFacebookMessenger /> Share on Messenger
+                    </Button>
+                  </Col>
+                </Row>
+              </Container>
+            )}
+          </Modal.Body>
+        </Modal>
       </div>
       <Footeri />
     </>

@@ -1,0 +1,6 @@
+{
+  "domain": "dev-0h3u7joort3gf2lb.us.auth0.com",
+  "clientId": "2xjbnRuzFmlk2RUBeG89LVSVaWkhOo7A",
+  "audience": "https://dev-0h3u7joort3gf2lb.us.auth0.com/api/v2/",
+  "redirectUri": "http://localhost:5173/"
+}

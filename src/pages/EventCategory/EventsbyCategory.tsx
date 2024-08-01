@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Container, Button } from "react-bootstrap";
-import "./EventsbyCategory.css";
-import Navbari from "../../components/Navbar";
-import Footeri from "../../components/Footer";
+import "../EventCategory/EventsbyCategory.css";
+import Navbari from "../../components/Navbar/Navbar";
+import Footeri from "../../components/Footer/Footer";
 
+// type for the event object
 type Event = {
-  id: string;
+  id: number;
   title: string;
+  description: string;
   startDate: string;
-  time: string;
+  endDate: string;
   location: string;
-  images: string;
+  categoryId: number;
+  availableTickets: number;
+  cityId: number;
+  attendees: number;
+  images: {
+    url: string;
+  }[];
 };
 
+// Number of events to display per page
 const ITEMS_PER_PAGE = 3;
 
 const categoryToIdMap: { [key: string]: number } = {
@@ -25,46 +34,51 @@ const categoryToIdMap: { [key: string]: number } = {
 };
 
 const CategoryEvents: React.FC = () => {
+  // category name from URL parameters
   const { category } = useParams<{ category: string }>();
   const [events, setEvents] = useState<Event[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchEvents = async (categoryId: number) => {
+    const fetchEvents = async () => {
+      setLoading(true);
+      setError(null);
+
       try {
-        const response = await fetch(`https://localhost:7136/api/Event/category/${categoryId}`);
+        // Get the category ID from the category name
+        const categoryId = categoryToIdMap[category as string];
+        if (categoryId === undefined) {
+          throw new Error("Invalid category");
+        }
+
+        const response = await fetch(
+          `https://localhost:7136/api/Event/category/${categoryId}`
+        );
         if (!response.ok) {
           throw new Error("Failed to fetch events");
         }
         const data = await response.json();
-        
-        if (Array.isArray(data)) {
-          setEvents(data);
-        } else {
-          console.error("Invalid data format", data);
-          setEvents([]);
-        }
+        setEvents(data);
       } catch (error) {
-        console.error(error);
-        setEvents([]);
+        console.error("Error fetching events:", error);
+        setError("Failed to load events. Please try again later.");
+      } finally {
+        setLoading(false);
       }
     };
 
-    const categoryId = categoryToIdMap[category as string];
-    if (categoryId !== undefined) {
-      fetchEvents(categoryId);
-    } else {
-      console.error("Invalid category");
-      setEvents([]);
-    }
+    fetchEvents();
   }, [category]);
 
-  const handleEventClick = (id: string) => {
-    navigate(`/Event/${id}`); 
+  const handleEventClick = (id: number) => {
+    navigate(`/Event/${id}`);
   };
-
+  // Calculate total number of pages for pagination
   const totalPages = Math.ceil(events.length / ITEMS_PER_PAGE);
+  // Get the events to display on the current page
   const currentEvents = events.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE
@@ -72,67 +86,77 @@ const CategoryEvents: React.FC = () => {
 
   return (
     <>
-    <Navbari/>
-    <Container className="my-4">
-
-      <h1>{category} Events</h1>
-      <div className="events-container">
-        {currentEvents.map((event) => (
-          <div
-            key={event.id}
-            className="event-card"
-            onClick={() => handleEventClick(event.id)}
-          >
-            <img
-              src={event.images}
-              alt={event.title}
-              className="event-image"
-            />
-            <div className="card-content">
-              <h3>{event.title}</h3>
-              <p>
-                Date: {event.startDate} at: {event.time}
-              </p>
-              <p>{event.location}</p>
-            </div>
+      <Navbari />
+      <Container className="my-4">
+        <h1>
+          <span style={{ color: "#7848F4" }}>{category}</span> Events
+        </h1>
+        {loading ? (
+          <p>Loading events...</p>
+        ) : error ? (
+          <p>{error}</p>
+        ) : (
+          <div className="category-events-container">
+            {currentEvents.map((event) => (
+              <div
+                key={event.id}
+                className="category-event-card"
+                onClick={() => handleEventClick(event.id)}
+              >
+                <img
+                  src={
+                    event.images.length > 0
+                      ? event.images[0].url
+                      : "placeholder.jpg"
+                  }
+                  alt={event.title}
+                  className="category-event-image"
+                />
+                <div className="category-card-content">
+                  <h3>{event.title}</h3>
+                  <p>
+                    Date: {new Date(event.startDate).toLocaleDateString()} at:{" "}
+                    {new Date(event.startDate).toLocaleTimeString()}
+                  </p>
+                  <p>{event.location}</p>
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-
-      <div className="pagination">
-        <Button
-          className="btn"
-          onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-          disabled={currentPage === 1}
-        >
-          &lt;
-        </Button>
-        {Array.from({ length: totalPages }, (_, index) => (
+        )}
+        <div className="category-pagination">
           <Button
-            key={index + 1}
-            className={`btn ${currentPage === index + 1 ? "active" : ""}`}
-            onClick={() => setCurrentPage(index + 1)}
+            className="category-btn"
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+            disabled={currentPage === 1}
           >
-            {index + 1}
+            &lt;
           </Button>
-        ))}
-        <Button
-          className="btn"
-          onClick={() =>
-            setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-          }
-          disabled={currentPage === totalPages}
-        >
-          &gt;
-        </Button>
-      </div>
-
-    </Container>
-  
+          {Array.from({ length: totalPages }, (_, index) => (
+            <Button
+              key={index + 1}
+              className={`category-btn ${
+                currentPage === index + 1 ? "active" : ""
+              }`}
+              onClick={() => setCurrentPage(index + 1)}
+            >
+              {index + 1}
+            </Button>
+          ))}
+          <Button
+            className="category-btn"
+            onClick={() =>
+              setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+            }
+            disabled={currentPage === totalPages}
+          >
+            &gt;
+          </Button>
+        </div>
+      </Container>
+      <Footeri />
     </>
-    
   );
-
 };
 
 export default CategoryEvents;

@@ -6,7 +6,7 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useNavigate } from 'react-router-dom';
 import './UpcomingEvents.css';
-import { fetchEvents } from '../services/UpcomingEventService';
+import { fetchEvents } from '../../services/UpcomingEventService';
 
 interface Event {
   id: string;
@@ -27,15 +27,15 @@ const UpcomingEvents: React.FC = () => {
     const loadEvents = async () => {
       try {
         const data = await fetchEvents();
-        setEvents(data);
+        setEvents(data);// Update state with fetched events
       } catch (error) {
         console.error('Upcoming events:', error);
       } finally {
-        setLoading(false);
+        setLoading(false);// Stop loading
       }
     };
     loadEvents();
-  }, []);
+  }, []);    //array runs once on mount
 
   if (loading) {
     return <div className="loading">Loading...</div>;

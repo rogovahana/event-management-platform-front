@@ -1,63 +1,79 @@
-import { useState, useEffect } from "react";
 import Carousel from "react-bootstrap/Carousel";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
-import baneri1 from "../assets/logo/carousel/baner1.jpg";
-import SearchEvent from "./SearchEvent";
-// import { Link } from "react-router-dom";
+import ticket1 from "../assets/logo/carousel/ticket1.jpg";
+import ticket2 from "../assets/logo/carousel/ticket2.jpg";
+
+import SearchEvent from "./SearchEvent/SearchEvent";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CreateEventButton from "./CreateEventButton";
-import Category from "./Category";
-
-type Event = {
-  title: string;
-  location: string;
-  date: string;
-};
+import Category from "./Category/Category";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Carouseli() {
-  const [events, setEvents] = useState<Event[]>([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const eventData: Event[] = [
-      {
-        title: "Sample Event 1",
-        location: "Sample Location 1",
-        date: "2024-07-15T18:00:00Z",
-      },
-      {
-        title: "Sample Event 2",
-        location: "Sample Location 2",
-        date: "2024-07-16T20:00:00Z",
-      },
-    ];
+    //  to show once and to be saved on local storage
+    //   const hasShownNotification = localStorage.getItem("notificationShown");
 
-    console.log(" events:", eventData);
-    setEvents(eventData);
-  }, []);
+    //   if (!hasShownNotification) {
+    //     toast.info(
+    //       <div onClick={() => navigate("/browse-events")} style={{ cursor: "pointer" }}>
+    //         Check out our Events!
+    //       </div>,
+    //       {
+    //         position: "bottom-right",
+    //         autoClose: 5000,
+    //       }
+    //     );
+
+    //     // Mark notification as shown in local storage
+    //     localStorage.setItem("notificationShown", "true");
+    //   }
+    // }, [navigate]);
+
+    // Show a toast notification about events when the component mounts
+    toast.info(
+      <div
+        onClick={() => navigate("/browse-events")}
+        style={{ cursor: "pointer" }}
+      >
+        Check out our Events!
+      </div>,
+      {
+        position: "bottom-right",
+        autoClose: 5000,
+      }
+    );
+  }, [navigate]);
+
   return (
     <div>
-      <ToastContainer />
-
+      <ToastContainer /> {/* Container for toast notifications */}
       <div className="carousel-container position-relative">
-        <Carousel>
-        {events.map((_event, index) => (
-            <Carousel.Item key={index}>
-              <img
-                className="d-block w-100"
-                src={baneri1}
-                alt={`Slide ${index}`}
-  style={{ maxHeight: "679px", objectFit: "cover" }}
-                
-              />
-            </Carousel.Item>
-          ))}
+        <Carousel interval={3000}>
+          <Carousel.Item>
+            <img
+              className="d-block w-100"
+              src={ticket1}
+              alt="ticket 1"
+              style={{ maxHeight: "679px", objectFit: "cover" }}
+            />
+          </Carousel.Item>
+          <Carousel.Item>
+            <img
+              className="d-block w-100"
+              src={ticket2}
+              alt="ticket2"
+              style={{ maxHeight: "678px", objectFit: "cover" }}
+            />
+          </Carousel.Item>
         </Carousel>
- 
-       
       </div>
       <div className="search-event-section mt-4">
         <SearchEvent />

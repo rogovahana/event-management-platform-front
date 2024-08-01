@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useAuth0 } from '@auth0/auth0-react';
 import { Form, Button, Container, Row, Col, Nav } from 'react-bootstrap';
 import { Link, Route, Routes, BrowserRouter as Router, useNavigate } from 'react-router-dom';
-import Navbari from '../../components/Navbar';
+import Navbari from '../../components/Navbar/Navbar';
 import TicketsPage from '../BookedTicketPage';
 import './ProfilePage.css';
 

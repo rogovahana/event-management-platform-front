@@ -6,8 +6,8 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
 import "./Navbar.css";
-import ThemeToggle from './ThemeToggle';
-import { useTheme } from '../contexts/ThemeContext';
+import ThemeToggle from '../ThemeToggle';
+import { useTheme } from '../../contexts/ThemeContext';
 
 function Navbari() {
   const { theme } = useTheme();
