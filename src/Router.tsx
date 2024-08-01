@@ -17,6 +17,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import PaymentSuccessPage from './components/payment/PaymentSuccesPage';
 import { AuthProvider } from './authentication/AuthContext';
 import LoginCallback from './authentication/LoginCallBack';
+//import ProtectedRoute from './components/ProtectedRoute';
 
 const stripePromise = loadStripe('your-stripe-public-key');
 
@@ -30,11 +31,11 @@ const AppRouter: React.FC = () => {
             <Route path="/create-event" element={<CreateEventPage />} />
             <Route path="/manage-events" element={<ManageEventsPage />} />
             <Route path="/sign-up" element={<SignUpPage />} />
-            <Route path="/callback" element={<LoginCallback/>} />
+            <Route path="/callback" element={<LoginCallback />} />
             <Route path="/login" element={<LoginPage />} />
             <Route path="/browse-events" element={<BrowseEventsPage />} />
             <Route path="/profile-page" element={<ProfilePage />} />
-            <Route path="/payment-success" element={<PaymentSuccessPage />} />
+            <Route path="/payment-success" element={<PaymentSuccessPage />}/>
             <Route path="/event/:eventId" element={<EventDetails />} />
             <Route path="/category/:category" element={<CategoryEvents />} />
             <Route 
