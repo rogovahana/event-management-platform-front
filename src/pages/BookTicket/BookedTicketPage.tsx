@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { fetchBookedTickets, cancelTicket } from '../services/ticketService';
-import Navbari from '../components/Navbar/Navbar';
-import UpdateTicketModal from '../components/UpdateTicketModal';
+import { fetchBookedTickets, cancelTicket } from '../../services/ticketService';
+import Navbari from '../../components/Navbar/Navbar';
+import UpdateTicketModal from '../../components/UpdateTicketModal';
 
 const BookedTicketsPage: React.FC = () => {
   const [tickets, setTickets] = useState<any[]>([]);
