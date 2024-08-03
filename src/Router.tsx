@@ -3,8 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/Homepage/Homepage';
 import CreateEventPage from './pages/CreateEvent/CreateEventPage';
 import ManageEventsPage from './pages/ManageEvent/ManageEventsPage';
-import SignUpPage from './authentication/SignUpPage';
-import LoginPage from './authentication/LoginPage';
 import EventDetails from './pages/EventDetails/EventDetail';
 import BrowseEventsPage from './pages/BrowseEvents/BrowseEventsPage';
 import ProfilePage from './pages/Profile/ProfilePage';
@@ -31,9 +29,7 @@ const AppRouter: React.FC = () => {
             <Route path="/" element={<HomePage />} />
             <Route path="/create-event" element={<CreateEventPage />} />
             <Route path="/manage-events" element={<ManageEventsPage />} />
-            <Route path="/sign-up" element={<SignUpPage />} />
             <Route path="/callback" element={<LoginCallback />} />
-            <Route path="/login" element={<LoginPage />} />
             <Route path="/browse-events" element={<BrowseEventsPage />} />
             <Route path="/profile-page" element={<ProfilePage />} />
             <Route path="/payment-success" element={<PaymentSuccessPage />}/>
