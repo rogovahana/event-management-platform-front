@@ -11,10 +11,11 @@ import ThemeToggle from '../ThemeToggle';
 import { useTheme } from '../../contexts/ThemeContext';
 import LoginButton from "../LoginButton";
 import SignUpButton from "../SignUpButton";
+import Logout from "../LogoutButton";
 
 function Navbari() {
   const { theme } = useTheme();
-  const { isAuthenticated, user, logout } = useAuth0();
+  const { isAuthenticated, user } = useAuth0();
 
   return (
     <Navbar expand="lg" className={`sticky-top ${theme === 'dark' ? 'navbar-dark bg-dark' : 'navbar-light bg-light'}`}>
@@ -43,9 +44,7 @@ function Navbari() {
                   <Dropdown.Item as={Link} to="/manage-events">Manage Events</Dropdown.Item>
                   <Dropdown.Item as={Link} to="/profile-page">Profile</Dropdown.Item>
                   <Dropdown.Item as={Link} to="/my-tickets">My Tickets</Dropdown.Item>
-                  <Dropdown.Item onClick={() => logout({ logoutParams: { returnTo: window.location.origin } })}>
-                    Logout
-                  </Dropdown.Item>
+                  <Logout />
                 </Dropdown.Menu>
               </Dropdown>
             ) : (
