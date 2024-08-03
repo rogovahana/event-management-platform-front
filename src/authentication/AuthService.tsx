@@ -26,6 +26,10 @@ class AuthService {
     this.auth0.authorize();
   };
 
+  signup = (): void => {
+    this.auth0.authorize({ screen_hint: 'signup' });
+  };
+
   // Handles authentication callback
   handleAuthentication = (callback: () => void): void => {
     const hash = window.location.hash;

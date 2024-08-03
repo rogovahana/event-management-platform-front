@@ -2,7 +2,6 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import Navbar from "react-bootstrap/Navbar";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
-import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
@@ -10,10 +9,12 @@ import { Dropdown } from 'react-bootstrap';
 import "./Navbar.css";
 import ThemeToggle from '../ThemeToggle';
 import { useTheme } from '../../contexts/ThemeContext';
+import LoginButton from "../LoginButton";
+import SignUpButton from "../SignUpButton";
 
 function Navbari() {
   const { theme } = useTheme();
-  const { isAuthenticated, user, loginWithRedirect, logout } = useAuth0();
+  const { isAuthenticated, user, logout } = useAuth0();
 
   return (
     <Navbar expand="lg" className={`sticky-top ${theme === 'dark' ? 'navbar-dark bg-dark' : 'navbar-light bg-light'}`}>
@@ -49,14 +50,8 @@ function Navbari() {
               </Dropdown>
             ) : (
               <>
-                <Button variant="outline" style={{ color: "#7848F4" }} className="ms-1 login-btn" onClick={() => loginWithRedirect()}>
-                  Login
-                </Button>
-                <Link to="/sign-up">
-                  <Button variant="primary" style={{ backgroundColor: "#7848F4", borderColor: "#7848F4" }} className="ms-1">
-                    Signup
-                  </Button>
-                </Link>
+                <LoginButton />
+                <SignUpButton />
               </>
             )}
           </Form>
