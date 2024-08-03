@@ -1,4 +1,3 @@
-// needs to handle and for images 
 import React, { useState } from 'react';
 import './CreateEventPage.css';
 import Navbari from '../../components/Navbar/Navbar';
@@ -9,14 +8,14 @@ const CreateEventPage: React.FC = () => {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [location, setLocation] = useState('');
-  const [organizerUserId, setOrganizerUserId] = useState<number>(0);
-  const [categoryId, setCategoryId] = useState<number>(0);
-  const [cityId, setCityId] = useState<number>(0);
+  const [categoryId, setCategoryId] = useState<number>(0); 
+  const [cityId, setCityId] = useState<number>(0); 
   const [ticketPrices, setTicketPrices] = useState<{ type: number; price: number }[]>([
-    { type: 1, price: 0 }, // Normal Price
-    { type: 2, price: 0 }  // VIP Price
+    { type: 1, price: 0 },
+    { type: 2, price: 0 }
   ]);
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
+  const [availableTickets, setAvailableTickets] = useState<number>(0);
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState({
     title: '',
@@ -24,8 +23,11 @@ const CreateEventPage: React.FC = () => {
     startDate: '',
     endDate: '',
     location: '',
+    categoryId: '',
+    cityId: '',
+    availableTickets: '',
     ticketPrices: '',
-    imageFiles: '',
+    imageUrls: '',
     submitError: '',
   });
 
@@ -33,7 +35,6 @@ const CreateEventPage: React.FC = () => {
     e.preventDefault();
     setSubmitting(true);
 
-    // Validate form inputs
     let isFormValid = true;
     const validationErrors = {
       title: title ? '' : 'Title is required',
@@ -41,78 +42,62 @@ const CreateEventPage: React.FC = () => {
       startDate: startDate ? '' : 'Start Date is required',
       endDate: endDate ? '' : 'End Date is required',
       location: location ? '' : 'Location is required',
+      categoryId: categoryId ? '' : 'Category is required',
+      cityId: cityId ? '' : 'City is required',
+      availableTickets: availableTickets > 0 ? '' : 'Available tickets must be greater than zero',
       ticketPrices: ticketPrices.some(ticket => ticket.price <= 0) ? 'Ticket prices must be positive' : '',
-      imageFiles: imageFiles.length === 0 ? 'At least one image is required' : '',
-      submitError: '', 
+      imageUrls: imageUrls.length > 0 ? '' : 'At least one image URL is required',
     };
-
-    // Check if start date is before today
-    const today = new Date().toISOString().split('T')[0];
-    if (startDate && new Date(startDate) < new Date(today)) {
-      validationErrors.startDate = 'Start Date cannot be in the past';
-      isFormValid = false;
-    }
-
-    // Check if end date is before start date
-    if (startDate && endDate && new Date(endDate) < new Date(startDate)) {
-      validationErrors.endDate = 'End Date cannot be before Start Date';
-      isFormValid = false;
-    }
 
     isFormValid = Object.values(validationErrors).every(error => error === '');
 
     if (!isFormValid) {
       setSubmitting(false);
-      setErrors(validationErrors);
       return;
     }
 
-    // JSON data
-    const eventData = {
+    const eventPayload = {
       title,
       description,
       startDate: new Date(startDate).toISOString(),
       endDate: new Date(endDate).toISOString(),
       location,
-      organizerUserId,
       categoryId,
       cityId,
+      availableTickets,
       ticketPrices,
-      
+      imageUrls,
     };
 
     try {
-      const token = 'TOKEN_HERE'; // Replace
+      const token = sessionStorage.getItem('accessToken');
       const response = await fetch('https://localhost:7136/api/Event', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        body: JSON.stringify(eventData),
+        body: JSON.stringify(eventPayload),
       });
 
       if (response.ok) {
         alert('Event created successfully');
-        // Reset form fields
         setTitle('');
         setDescription('');
         setStartDate('');
         setEndDate('');
         setLocation('');
-        setOrganizerUserId(0);
         setCategoryId(0);
         setCityId(0);
+        setAvailableTickets(0);
         setTicketPrices([{ type: 1, price: 0 }, { type: 2, price: 0 }]);
-        setImageFiles([]); // Reset image files
+        setImageUrls([]);
       } else {
         const errorText = await response.text();
-        setErrors({ ...validationErrors, submitError: `Failed to create event: ${errorText}` });
-        console.error('Error response:', errorText);
+        setErrors({ ...errors, submitError: `Failed to create event: ${errorText}` });
       }
     } catch (error) {
-      setErrors({ ...validationErrors, submitError: 'An error occurred. Please try again later.' });
-      console.error('An error occurred:', error);
+      setErrors({ ...errors, submitError: 'An error occurred. Please try again later.' });
     } finally {
       setSubmitting(false);
     }
@@ -127,148 +112,137 @@ const CreateEventPage: React.FC = () => {
           <div className="form-group mb-3">
             <label htmlFor="title">Title</label>
             <input
-              id="title"
               type="text"
+              id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               className="form-control"
-              placeholder="Event Title"
-              required
+              placeholder="Enter event title"
             />
             {errors.title && <p className="error-message">{errors.title}</p>}
           </div>
           <div className="form-group mb-3">
-            <label htmlFor="description">Description</label>
+            <label htmlFor="description" className="event-description-label">Description</label>
             <textarea
               id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className="form-control"
-              placeholder="Event Description"
-              required
-            />
+              rows={5}
+              placeholder="Enter event description"
+            ></textarea>
             {errors.description && <p className="error-message">{errors.description}</p>}
           </div>
           <div className="form-group mb-3">
             <label htmlFor="startDate">Start Date</label>
             <input
-              id="startDate"
               type="datetime-local"
+              id="startDate"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
               className="form-control"
-              required
             />
             {errors.startDate && <p className="error-message">{errors.startDate}</p>}
           </div>
           <div className="form-group mb-3">
             <label htmlFor="endDate">End Date</label>
             <input
-              id="endDate"
               type="datetime-local"
+              id="endDate"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
               className="form-control"
-              required
             />
             {errors.endDate && <p className="error-message">{errors.endDate}</p>}
           </div>
           <div className="form-group mb-3">
             <label htmlFor="location">Location</label>
             <input
-              id="location"
               type="text"
+              id="location"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               className="form-control"
-              placeholder="Location"
-              required
+              placeholder="Enter event location"
             />
             {errors.location && <p className="error-message">{errors.location}</p>}
           </div>
           <div className="form-group mb-3">
-            <label htmlFor="category">Category</label>
-            <select
-              id="category"
+            <label htmlFor="categoryId">Category</label>
+            <input
+              type="number"
+              id="categoryId"
               value={categoryId}
               onChange={(e) => setCategoryId(parseInt(e.target.value))}
               className="form-control"
-              required
-            >
-              <option value="0">Select a category</option>
-              <option value="1">Music</option>
-              <option value="2">Sports</option>
-              <option value="3">Arts</option>
-              <option value="4">Technology</option>
-              <option value="5">Food & Drink</option>
-            </select>
+              placeholder="Enter category ID"
+            />
+            {errors.categoryId && <p className="error-message">{errors.categoryId}</p>}
           </div>
           <div className="form-group mb-3">
-            <label htmlFor="city">City</label>
-            <select
-              id="city"
+            <label htmlFor="cityId">City</label>
+            <input
+              type="number"
+              id="cityId"
               value={cityId}
               onChange={(e) => setCityId(parseInt(e.target.value))}
               className="form-control"
-              required
-            >
-              <option value="0">Select a city</option>
-              <option value="1">New York City</option>
-              <option value="2">Los Angeles</option>
-              <option value="3">Chicago</option>
-              <option value="4">Houston</option>
-              <option value="5">Phoenix</option>
-            </select>
+              placeholder="Enter city ID"
+            />
+            {errors.cityId && <p className="error-message">{errors.cityId}</p>}
           </div>
           <div className="form-group mb-3">
-            <label>Ticket Prices</label>
-            {ticketPrices.map((ticket, index) => (
-              <div key={index} className="mb-2">
-                <label>{ticket.type === 1 ? 'Normal Price' : 'VIP Price'}</label>
-                <div className="input-group">
-                  <input
-                    type="number"
-                    value={ticket.price}
-                    onChange={(e) => {
-                      const newPrice = parseFloat(e.target.value);
-                      setTicketPrices(ticketPrices.map((t, i) =>
-                        i === index ? { ...t, price: newPrice } : t
-                      ));
-                    }}
-                    className="form-control"
-                    min="0"
-                  />
-                  <span className="input-group-text">€</span>
-                </div>
-              </div>
-            ))}
+            <label htmlFor="availableTickets">Available Tickets</label>
+            <input
+              type="number"
+              id="availableTickets"
+              value={availableTickets}
+              onChange={(e) => setAvailableTickets(parseInt(e.target.value))}
+              className="form-control"
+              placeholder="Enter available tickets"
+            />
+            {errors.availableTickets && <p className="error-message">{errors.availableTickets}</p>}
+          </div>
+          <div className="form-group mb-3">
+            <label htmlFor="normalTicketPrice">Normal Ticket Price</label>
+            <input
+              type="number"
+              id="normalTicketPrice"
+              value={ticketPrices.find(ticket => ticket.type === 1)?.price || 0}
+              onChange={(e) => setTicketPrices(ticketPrices.map(ticket => ticket.type === 1 ? { ...ticket, price: parseFloat(e.target.value) } : ticket))}
+              className="form-control"
+              placeholder="Enter normal ticket price"
+            />
             {errors.ticketPrices && <p className="error-message">{errors.ticketPrices}</p>}
           </div>
           <div className="form-group mb-3">
-            <label htmlFor="imageFiles">Images</label>
+            <label htmlFor="vipTicketPrice">VIP Ticket Price</label>
             <input
-              id="imageFiles"
-              type="file"
-              multiple
-              onChange={(e) => {
-                if (e.target.files) {
-                  setImageFiles(Array.from(e.target.files));
-                }
-              }}
+              type="number"
+              id="vipTicketPrice"
+              value={ticketPrices.find(ticket => ticket.type === 2)?.price || 0}
+              onChange={(e) => setTicketPrices(ticketPrices.map(ticket => ticket.type === 2 ? { ...ticket, price: parseFloat(e.target.value) } : ticket))}
               className="form-control"
-              accept="image/*"
-              required
+              placeholder="Enter VIP ticket price"
             />
-            {errors.imageFiles && <p className="error-message">{errors.imageFiles}</p>}
+            {errors.ticketPrices && <p className="error-message">{errors.ticketPrices}</p>}
           </div>
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={submitting}
-          >
+          <div className="form-group mb-3">
+            <label htmlFor="imageUrls">Image URLs (comma separated)</label>
+            <input
+              type="text"
+              id="imageUrls"
+              value={imageUrls.join(', ')}
+              onChange={(e) => setImageUrls(e.target.value.split(',').map(url => url.trim()))}
+              className="form-control"
+              placeholder="Enter image URLs"
+            />
+            {errors.imageUrls && <p className="error-message">{errors.imageUrls}</p>}
+          </div>
+          <button type="submit" className="btn btn-primary" disabled={submitting}>
             {submitting ? 'Submitting...' : 'Create Event'}
           </button>
-          {errors.submitError && <p className="error-message mt-3">{errors.submitError}</p>}
+          {errors.submitError && <p className="error-message">{errors.submitError}</p>}
         </form>
       </div>
     </>
