@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Container, Row, Col, Button, Card } from "react-bootstrap";
 import { FaCalendarAlt, FaMapMarkerAlt, FaClock } from "react-icons/fa";
 import {
@@ -15,7 +15,6 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import Navbari from "../../components/Navbar/Navbar";
 import Footer from "../../components/Footer/Footer";
-import BookingModal from "../../components/BookingModal";
 import RecommendedEvents from "../../components/RecommendedEvents";
 import ReviewComponent from "../../components/ReviewEvents/Review";
 
@@ -54,22 +53,23 @@ interface RecommendedEvent {
 }
 
 const EventDetails: React.FC = () => {
-   // Retrieve the event ID from the URL parameters
+  // Retrieve the event ID from the URL parameters
   const { eventId } = useParams<{ eventId: string }>();
   const [event, setEvent] = useState<EventDetails | null>(null);
   const [recommendedEvents, setRecommendedEvents] = useState<
     RecommendedEvent[]
   >([]);
-  // State to control the visibility of the booking modal
-  const [showBookingModal, setShowBookingModal] = useState(false);
+  const navigate = useNavigate();
 
-  //nees to change with auth0, user ID  // Placeholder user ID 
+  //nees to change with auth0, user ID  // Placeholder user ID
   const userId = 1;
 
   useEffect(() => {
     const fetchEventDetails = async () => {
       try {
-        const response = await fetch(`https://localhost:7136/api/Event/${eventId}`);
+        const response = await fetch(
+          `https://localhost:7136/api/Event/${eventId}`
+        );
         if (response.ok) {
           const data: EventDetails = await response.json();
           setEvent(data);
@@ -83,7 +83,9 @@ const EventDetails: React.FC = () => {
 
     const fetchRecommendedEvents = async () => {
       try {
-        const response = await fetch(`https://localhost:7136/api/Recommendation?userId=${userId}`);
+        const response = await fetch(
+          `https://localhost:7136/api/Recommendation?userId=${userId}`
+        );
         if (response.ok) {
           const data: RecommendedEvent[] = await response.json();
           setRecommendedEvents(data);
@@ -99,9 +101,6 @@ const EventDetails: React.FC = () => {
     fetchRecommendedEvents();
   }, [eventId, userId]);
 
-  const handleBookingModalClose = () => setShowBookingModal(false);
-  const handleBookingModalShow = () => setShowBookingModal(true);
-
   const shareUrl = window.location.href;
 
   if (!event) {
@@ -109,10 +108,20 @@ const EventDetails: React.FC = () => {
   }
 
   // Format dates for Google Calendar URL
-  const formatDate = (date: string) => new Date(date).toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '');
+  const formatDate = (date: string) =>
+    new Date(date)
+      .toISOString()
+      .replace(/[-:]/g, "")
+      .replace(/\.\d{3}/, "");
 
   // Google Calendar link
-  const googleCalendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${formatDate(event.startDate)}/${formatDate(event.endDate)}&location=${encodeURIComponent(event.location)}&details=${encodeURIComponent(event.description)}`;
+  const googleCalendarLink = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+    event.title
+  )}&dates=${formatDate(event.startDate)}/${formatDate(
+    event.endDate
+  )}&location=${encodeURIComponent(
+    event.location
+  )}&details=${encodeURIComponent(event.description)}`;
 
   return (
     <>
@@ -142,10 +151,19 @@ const EventDetails: React.FC = () => {
                   {new Date(event.endDate).toLocaleTimeString()} <br />
                   <FaMapMarkerAlt /> {event.location}
                 </p>
-                <Button variant="primary" onClick={handleBookingModalShow} className="me-2">
+                <Button
+                  variant="primary"
+                  onClick={() => navigate(`/book-tickets/${event.id}`)}
+                  className="me-2"
+                >
                   Book Now
                 </Button>
-                <Button variant="outline-primary" href={googleCalendarLink} target="_blank" rel="noopener noreferrer" >
+                <Button
+                  variant="outline-primary"
+                  href={googleCalendarLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Add to Google Calendar
                 </Button>
               </Card.Body>
@@ -165,7 +183,7 @@ const EventDetails: React.FC = () => {
               </Card.Body>
             </Card>
             <RecommendedEvents />
-             {/* needs to change when auth0 is ready  */}
+            {/* needs to change when auth0 is ready  */}
             <ReviewComponent eventId={event.id} />
           </Col>
 
@@ -185,7 +203,9 @@ const EventDetails: React.FC = () => {
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   />
-                  <Marker position={[51.505, -0.09]}> {/* Dummy coordinates for testing */}
+                  <Marker position={[51.505, -0.09]}>
+                    {" "}
+                    {/* Dummy coordinates for testing */}
                     <Popup>{event.location}</Popup>
                   </Marker>
                 </MapContainer>
@@ -206,12 +226,6 @@ const EventDetails: React.FC = () => {
             </Card>
           </Col>
         </Row>
-
-        {/* Booking Modal */}
-        <BookingModal
-          show={showBookingModal}
-          handleClose={handleBookingModalClose}
-        />
       </Container>
       <Footer />
     </>

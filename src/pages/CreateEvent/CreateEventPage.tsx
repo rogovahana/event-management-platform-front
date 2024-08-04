@@ -31,6 +31,22 @@ const CreateEventPage: React.FC = () => {
     submitError: '',
   });
 
+  const categories = [
+    { id: 1, name: 'Music' },
+    { id: 2, name: 'Sports' },
+    { id: 3, name: 'Arts' },
+    { id: 4, name: 'Technology' },
+    { id: 5, name: 'Food & Drink' },
+  ];
+
+  const cities = [
+    { id: 1, name: 'New York City' },
+    { id: 2, name: 'Los Angeles' },
+    { id: 3, name: 'Chicago' },
+    { id: 4, name: 'Houston' },
+    { id: 5, name: 'Phoenix' },
+  ];
+
   const handleFormSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitting(true);
@@ -169,26 +185,32 @@ const CreateEventPage: React.FC = () => {
           </div>
           <div className="form-group mb-3">
             <label htmlFor="categoryId">Category</label>
-            <input
-              type="number"
+            <select
               id="categoryId"
               value={categoryId}
               onChange={(e) => setCategoryId(parseInt(e.target.value))}
               className="form-control"
-              placeholder="Enter category ID"
-            />
+            >
+              <option value={0}>Select a category</option>
+              {categories.map(category => (
+                <option key={category.id} value={category.id}>{category.name}</option>
+              ))}
+            </select>
             {errors.categoryId && <p className="error-message">{errors.categoryId}</p>}
           </div>
           <div className="form-group mb-3">
             <label htmlFor="cityId">City</label>
-            <input
-              type="number"
+            <select
               id="cityId"
               value={cityId}
               onChange={(e) => setCityId(parseInt(e.target.value))}
               className="form-control"
-              placeholder="Enter city ID"
-            />
+            >
+              <option value={0}>Select a city</option>
+              {cities.map(city => (
+                <option key={city.id} value={city.id}>{city.name}</option>
+              ))}
+            </select>
             {errors.cityId && <p className="error-message">{errors.cityId}</p>}
           </div>
           <div className="form-group mb-3">
@@ -204,7 +226,7 @@ const CreateEventPage: React.FC = () => {
             {errors.availableTickets && <p className="error-message">{errors.availableTickets}</p>}
           </div>
           <div className="form-group mb-3">
-            <label htmlFor="normalTicketPrice">Normal Ticket Price</label>
+            <label htmlFor="normalTicketPrice">Normal Ticket Price (€)</label>
             <input
               type="number"
               id="normalTicketPrice"
@@ -216,7 +238,7 @@ const CreateEventPage: React.FC = () => {
             {errors.ticketPrices && <p className="error-message">{errors.ticketPrices}</p>}
           </div>
           <div className="form-group mb-3">
-            <label htmlFor="vipTicketPrice">VIP Ticket Price</label>
+            <label htmlFor="vipTicketPrice">VIP Ticket Price  (€)</label>
             <input
               type="number"
               id="vipTicketPrice"
@@ -228,7 +250,7 @@ const CreateEventPage: React.FC = () => {
             {errors.ticketPrices && <p className="error-message">{errors.ticketPrices}</p>}
           </div>
           <div className="form-group mb-3">
-            <label htmlFor="imageUrls">Image URLs (comma separated)</label>
+            <label htmlFor="imageUrls">Image URLs</label>
             <input
               type="text"
               id="imageUrls"
@@ -240,7 +262,7 @@ const CreateEventPage: React.FC = () => {
             {errors.imageUrls && <p className="error-message">{errors.imageUrls}</p>}
           </div>
           <button type="submit" className="btn btn-primary" disabled={submitting}>
-            {submitting ? 'Submitting...' : 'Create Event'}
+            {submitting ? 'Creating...' : 'Create Event'}
           </button>
           {errors.submitError && <p className="error-message">{errors.submitError}</p>}
         </form>

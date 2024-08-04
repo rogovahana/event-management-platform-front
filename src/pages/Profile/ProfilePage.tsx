@@ -118,8 +118,8 @@ const ProfilePage: React.FC = () => {
         <Row>
           <Col md={3}>
             <Nav className="flex-column">
-              <Nav.Link as={Link} to="/profile-page">Account Information</Nav.Link>
-              <Nav.Link as={Link} to="/my-tickets">Tickets</Nav.Link>
+              <Nav.Link as={Link} to="/profile-page" style={{ color: "#7848F4" }}>Account Information</Nav.Link>
+              <Nav.Link as={Link} to="/my-tickets" style={{ color: "#7848F4" }}>Tickets</Nav.Link>
             </Nav>
           </Col>
           <Col md={9}>

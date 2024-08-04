@@ -18,40 +18,24 @@ function Carouseli() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    //  to show once and to be saved on local storage
-    //   const hasShownNotification = localStorage.getItem("notificationShown");
+      const hasShownNotification = localStorage.getItem("notificationShown");
 
-    //   if (!hasShownNotification) {
-    //     toast.info(
-    //       <div onClick={() => navigate("/browse-events")} style={{ cursor: "pointer" }}>
-    //         Check out our Events!
-    //       </div>,
-    //       {
-    //         position: "bottom-right",
-    //         autoClose: 5000,
-    //       }
-    //     );
+      if (!hasShownNotification) {
+        toast.info(
+          <div onClick={() => navigate("/browse-events")} style={{ cursor: "pointer" }}>
+            Check out our Events!
+          </div>,
+          {
+            position: "bottom-right",
+            autoClose: 5000,
+          }
+        );
 
-    //     // Mark notification as shown in local storage
-    //     localStorage.setItem("notificationShown", "true");
-    //   }
-    // }, [navigate]);
-
-    // Show a toast notification about events when the component mounts
-    toast.info(
-      <div
-        onClick={() => navigate("/browse-events")}
-        style={{ cursor: "pointer" }}
-      >
-        Check out our Events!
-      </div>,
-      {
-        position: "bottom-right",
-        autoClose: 5000,
+        localStorage.setItem("notificationShown", "true");
       }
-    );
-  }, [navigate]);
+    }, [navigate]);
 
+   
   return (
     <div>
       <ToastContainer /> {/* Container for toast notifications */}
@@ -79,7 +63,8 @@ function Carouseli() {
         <SearchEvent />
       </div>
       <Category />
-      <div className="create-event-section bg-light p-4 mt-5">
+      <div className="create-event-section
+     p-4 mt-5">
         <Container>
           <Row className="align-items-center">
             <Col xs={12} md={4} className="text-center mb-3 mb-md-0">

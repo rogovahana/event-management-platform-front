@@ -65,7 +65,7 @@ function SearchEvent() {
     <div>
       <Container
         fluid
-        className="search-event-container text-center bg-light p-3 rounded mb-4"
+        className="search-event-container text-center p-3 rounded mb-4"
         style={{ zIndex: 10, maxWidth: "90%" }}
       >
         <Form onSubmit={handleSearch}>
