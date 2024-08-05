@@ -1,0 +1,24 @@
+// used sass for requriements purposes
+$primary-color: #7848F4;
+
+.navbar {
+  padding: 10px 20px;
+
+  .btn {
+    margin-left: 5px;
+    margin-right: 5px;
+  }
+}
+
+.primary-color {
+  color: $primary-color;
+}
+
+.events-link {
+  color: $primary-color;
+  text-decoration: none;
+
+  &:hover {
+    color: darken($primary-color, 10%);
+  }
+}
