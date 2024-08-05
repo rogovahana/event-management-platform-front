@@ -1,30 +1,34 @@
-# React + TypeScript + Vite
+# Event Management Platform Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the frontend for the Event Management Platform, built with React, TypeScript, and Vite. The frontend integrates with the backend API to provide features for browsing, searching, and filtering events, along with user authentication and profile management.
 
-Currently, two official plugins are available:
+## Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Prerequisites
 
-## Expanding the ESLint configuration
+- Node.js (version 16.x or higher)
+- npm or yarn (package manager)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Cloning the Repository
 
-- Configure the top-level `parserOptions` property like this:
+1. Clone the repository:
+    ```bash
+    https://github.com/rogovahana/event-management-platform-front.git
+    cd event-management-platform-frontend
+    ```
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+2. Install dependencies:
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
+
+### Running the Development Server
+
+Start the development server with:
+```bash
+npm run dev
+# or
+yarn dev
 ```
-
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
