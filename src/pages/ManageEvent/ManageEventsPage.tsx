@@ -77,8 +77,8 @@ const ManageEventsPage: React.FC = () => {
                 <tbody>
                   {events.map(event => (
                     <tr key={event.id}>
-                      <td>{event.name}</td>
-                      <td>{event.date}</td>
+                      <td>{event.title}</td>
+                      <td>{new Date(event.startDate).toLocaleDateString()}</td>
                       <td>{event.description}</td>
                       <td>
                         <button className="btn btn-primary btn-sm me-2" onClick={() => handleEdit(event)}>Edit</button>
@@ -97,26 +97,26 @@ const ManageEventsPage: React.FC = () => {
 };
 
 const EventForm: React.FC<{ event: any, onSubmit: (event: any) => void, onCancel: () => void }> = ({ event, onSubmit, onCancel }) => {
-  const [name, setName] = useState(event.name);
-  const [date, setDate] = useState(event.date);
+  const [title, setTitle] = useState(event.title);
+  const [startDate, setStartDate] = useState(event.startDate);
   const [description, setDescription] = useState(event.description);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSubmit({ ...event, name, date, description });
+    onSubmit({ ...event, title, startDate, description });
   };
 
   return (
     <form onSubmit={handleSubmit}>
       <div className="form-group mb-3">
-        <label htmlFor="eventName">Event Name</label>
+        <label htmlFor="eventTitle">Event Title</label>
         <input
           type="text"
-          id="eventName"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
+          id="eventTitle"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
           className="form-control"
-          placeholder="Enter event name"
+          placeholder="Enter event title"
         />
       </div>
       <div className="form-group mb-3">
@@ -124,8 +124,8 @@ const EventForm: React.FC<{ event: any, onSubmit: (event: any) => void, onCancel
         <input
           type="date"
           id="eventDate"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
+          value={new Date(startDate).toISOString().substring(0, 10)}
+          onChange={(e) => setStartDate(new Date(e.target.value).getTime())}
           className="form-control"
         />
       </div>
