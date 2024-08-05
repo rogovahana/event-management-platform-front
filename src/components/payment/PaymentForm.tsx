@@ -4,6 +4,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import { Button, Form, Container, Row, Col } from 'react-bootstrap';
 import { bookTickets } from '../../services/ticketService';
 import { useNavigate } from 'react-router-dom';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface PaymentFormProps {
   eventId: string;
@@ -17,6 +18,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ eventId, numTickets, onSucces
   const elements = useElements();
   const { theme } = useTheme();
   const navigate = useNavigate();
+  const { getAccessTokenSilently } = useAuth0();
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -42,7 +44,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ eventId, numTickets, onSucces
       if (error) {
         onError(error.message || 'An error occurred while creating the payment method');
       } else {
-        await bookTickets(eventId, numTickets, paymentMethod.id);
+        const accessToken = await getAccessTokenSilently();
+        await bookTickets(eventId, 1, numTickets, paymentMethod.id, accessToken); 
         onSuccess();
         navigate('/payment-success');
       }

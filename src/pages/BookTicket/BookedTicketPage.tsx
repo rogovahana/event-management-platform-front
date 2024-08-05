@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 import { fetchBookedTickets, cancelTicket } from '../../services/ticketService';
 import Navbari from '../../components/Navbar/Navbar';
 import UpdateTicketModal from '../../components/UpdateTicketModal';
 
 const BookedTicketsPage: React.FC = () => {
+  const { getAccessTokenSilently } = useAuth0();
   const [tickets, setTickets] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -12,7 +14,8 @@ const BookedTicketsPage: React.FC = () => {
   useEffect(() => {
     const getTickets = async () => {
       try {
-        const data = await fetchBookedTickets();
+        const token = await getAccessTokenSilently();
+        const data = await fetchBookedTickets(token);
         setTickets(data);
         setLoading(false);
       } catch (error) {
@@ -21,11 +24,12 @@ const BookedTicketsPage: React.FC = () => {
       }
     };
     getTickets();
-  }, []);
+  }, [getAccessTokenSilently]);
 
   const handleCancel = async (ticketId: string) => {
     try {
-      await cancelTicket(ticketId);
+      const token = await getAccessTokenSilently();
+      await cancelTicket(ticketId, token);
       setTickets(tickets.filter(ticket => ticket.id !== ticketId));
       alert('Ticket canceled successfully');
     } catch (error) {
@@ -46,7 +50,8 @@ const BookedTicketsPage: React.FC = () => {
 
   const handleTicketUpdate = async () => {
     try {
-      const data = await fetchBookedTickets();
+      const token = await getAccessTokenSilently();
+      const data = await fetchBookedTickets(token);
       setTickets(data);
     } catch (error) {
       console.error('Failed to fetch booked tickets', error);
@@ -79,7 +84,7 @@ const BookedTicketsPage: React.FC = () => {
                 <tr key={ticket.id}>
                   <td>{ticket.event.name}</td>
                   <td>{ticket.event.date}</td>
-                  <td>{ticket.numTickets}</td>
+                  <td>{ticket.quantity}</td>
                   <td>
                     <button
                       className="btn btn-primary btn-sm me-2"

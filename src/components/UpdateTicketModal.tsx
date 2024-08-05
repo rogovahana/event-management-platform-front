@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { updateBookedTicket } from '../services/ticketService';
+import { useAuth0 } from '@auth0/auth0-react';
 
 interface UpdateTicketModalProps {
   show: boolean;
@@ -11,6 +12,7 @@ interface UpdateTicketModalProps {
 const UpdateTicketModal: React.FC<UpdateTicketModalProps> = ({ show, onClose, ticket, onUpdate }) => {
   const [numTickets, setNumTickets] = useState(ticket ? ticket.numTickets : 1);
   const [loading, setLoading] = useState(false);
+  const { getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     if (ticket) {
@@ -21,7 +23,8 @@ const UpdateTicketModal: React.FC<UpdateTicketModalProps> = ({ show, onClose, ti
   const handleUpdate = async () => {
     setLoading(true);
     try {
-      await updateBookedTicket(ticket.id, numTickets);
+      const accessToken = await getAccessTokenSilently();
+      await updateBookedTicket(ticket.id, numTickets, accessToken);
       onUpdate();
       onClose();
     } catch (error) {

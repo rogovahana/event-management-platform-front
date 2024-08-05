@@ -19,7 +19,7 @@ import { AuthProvider } from "./authentication/AuthContext";
 import LoginCallback from "./authentication/LoginCallBack";
 import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
 
-const stripePromise = loadStripe("your-stripe-public-key");
+const stripePromise = loadStripe("pk_test_51PfTSmRxlekiJbyBiGbnfuVRZ49ILQ3NnAZh74LC7xahVu6KZv3Tp16hx0wggQCuPTEvazG3BBsOzKE1Av8WMxwI00eyzZ6Di7");
 
 const AppRouter: React.FC = () => {
   return (
