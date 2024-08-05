@@ -1,19 +1,24 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { getEventAnalytics } from '../../services/analyticsService';
-import { Container, Row, Col } from 'react-bootstrap';
+import { getEventAnalyticsForPeriod, getEventAnalyticsForDateRange, generateAnalyticsReport } from '../../services/analyticsService';
+import { Container, Row, Col, Button, Dropdown, Form } from 'react-bootstrap';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
 const EventAnalyticsPage: React.FC = () => {
-  const { eventId } = useParams<{ eventId: string }>();
   const [analyticsData, setAnalyticsData] = useState<any>(null);
+  const [period, setPeriod] = useState<'Last30Days' | 'Last60Days' | 'Last90Days'>('Last30Days');
+  const [customDateRange, setCustomDateRange] = useState<{ startDate: string, endDate: string } | null>(null);
 
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const data = await getEventAnalytics(eventId!);
+        let data;
+        if (customDateRange) {
+          data = await getEventAnalyticsForDateRange(customDateRange.startDate, customDateRange.endDate);
+        } else {
+          data = await getEventAnalyticsForPeriod(period);
+        }
         setAnalyticsData(data);
       } catch (error) {
         console.error('Error fetching analytics data:', error);
@@ -21,7 +26,7 @@ const EventAnalyticsPage: React.FC = () => {
     };
 
     fetchAnalytics();
-  }, [eventId]);
+  }, [period, customDateRange]);
 
   useEffect(() => {
     if (analyticsData) {
@@ -29,10 +34,10 @@ const EventAnalyticsPage: React.FC = () => {
       new Chart(ctx, {
         type: 'line',
         data: {
-          labels: analyticsData.attendance.map((a: any) => a.date),
+          labels: analyticsData.attendance?.map((a: any) => a.date) || [],
           datasets: [{
             label: 'Attendance',
-            data: analyticsData.attendance.map((a: any) => a.count),
+            data: analyticsData.attendance?.map((a: any) => a.count) || [],
             borderColor: 'rgba(75, 192, 192, 1)',
             backgroundColor: 'rgba(75, 192, 192, 0.2)',
           }]
@@ -40,6 +45,18 @@ const EventAnalyticsPage: React.FC = () => {
       });
     }
   }, [analyticsData]);
+
+  const handlePeriodChange = (newPeriod: 'Last30Days' | 'Last60Days' | 'Last90Days') => {
+    setPeriod(newPeriod);
+    setCustomDateRange(null); 
+  };
+
+  const handleDateRangeChange = () => {
+    
+    if (customDateRange?.startDate && customDateRange.endDate) {
+      // fetchAnalytics(); 
+    }
+  };
 
   if (!analyticsData) {
     return <div>Loading...</div>;
@@ -51,10 +68,50 @@ const EventAnalyticsPage: React.FC = () => {
         <Col>
           <h2>Event Analytics</h2>
           <div>
-            <h4>Total Tickets Sold: {analyticsData.totalTicketsSold}</h4>
+            <h4>Total Tickets Sold: {analyticsData.sales}</h4>
           </div>
           <div>
             <canvas id="attendanceChart"></canvas>
+          </div>
+          <div className="mt-3">
+            <Dropdown>
+              <Dropdown.Toggle variant="success" id="dropdown-basic">
+                Period: {period}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item onClick={() => handlePeriodChange('Last30Days')}>Last 30 Days</Dropdown.Item>
+                <Dropdown.Item onClick={() => handlePeriodChange('Last60Days')}>Last 60 Days</Dropdown.Item>
+                <Dropdown.Item onClick={() => handlePeriodChange('Last90Days')}>Last 90 Days</Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <Button className="mt-2" onClick={() => generateAnalyticsReport()}>
+              Generate Report
+            </Button>
+            <Form className="mt-3">
+              <Form.Group>
+                <Form.Label>Start Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  onChange={(e) => setCustomDateRange(prev => ({
+                    ...prev!,
+                    startDate: e.target.value
+                  }))}
+                />
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>End Date</Form.Label>
+                <Form.Control
+                  type="date"
+                  onChange={(e) => setCustomDateRange(prev => ({
+                    ...prev!,
+                    endDate: e.target.value
+                  }))}
+                />
+              </Form.Group>
+              <Button className="mt-2" onClick={handleDateRangeChange}>
+                Apply Custom Date Range
+              </Button>
+            </Form>
           </div>
         </Col>
       </Row>
