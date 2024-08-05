@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getEventAnalyticsForPeriod, getEventAnalyticsForDateRange, generateAnalyticsReport } from '../../services/analyticsService';
 import { Container, Row, Col, Button, Dropdown, Form } from 'react-bootstrap';
 import { Chart, registerables } from 'chart.js';
+import Navbari from '../../components/Navbar/Navbar';
 
 Chart.register(...registerables);
 
@@ -54,7 +55,7 @@ const EventAnalyticsPage: React.FC = () => {
   const handleDateRangeChange = () => {
     
     if (customDateRange?.startDate && customDateRange.endDate) {
-      // fetchAnalytics(); 
+  
     }
   };
 
@@ -64,6 +65,7 @@ const EventAnalyticsPage: React.FC = () => {
 
   return (
     <Container>
+      <Navbari />
       <Row>
         <Col>
           <h2>Event Analytics</h2>

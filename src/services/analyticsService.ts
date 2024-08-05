@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'backend api'; 
+const API_URL = 'https://localhost:7136'; 
 
 
 export const getEventAnalyticsForPeriod = async (period: 'Last30Days' | 'Last60Days' | 'Last90Days') => {

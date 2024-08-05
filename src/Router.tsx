@@ -18,6 +18,7 @@ import PaymentSuccessPage from "./components/payment/PaymentSuccesPage";
 import { AuthProvider } from "./authentication/AuthContext";
 import LoginCallback from "./authentication/LoginCallBack";
 import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
+import EventAnalyticsPage from "./pages/Analytics/EventAnalyticsPage";
 
 const stripePromise = loadStripe("pk_test_51PfTSmRxlekiJbyBiGbnfuVRZ49ILQ3NnAZh74LC7xahVu6KZv3Tp16hx0wggQCuPTEvazG3BBsOzKE1Av8WMxwI00eyzZ6Di7");
 
@@ -47,6 +48,7 @@ const AppRouter: React.FC = () => {
               }
             />
             <Route path="/my-tickets" element={<BookedTicketsPage />} />
+            <Route path="/analytics" element={<EventAnalyticsPage />} />
             <Route path="*" element={<NotFoundPage />} />
           </Routes>
         </Router>
