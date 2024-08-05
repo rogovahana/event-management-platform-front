@@ -1,167 +1,171 @@
 import React, { useEffect, useState } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
-import { Form, Button, Container, Row, Col, Nav } from 'react-bootstrap';
-import { Link, Route, Routes, BrowserRouter as Router, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import Navbari from '../../components/Navbar/Navbar';
-import TicketsPage from '../BookTicket/BookedTicketPage';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './ProfilePage.css';
-
-interface UserProfile {
-  username: string;
-  email: string;
-  phoneNumber: string;
-}
+import Footeri from '../../components/Footer/Footer';
+import { fetchUserProfile, updateUserProfile, UserProfile } from '../../services/userProfileService';
 
 const ProfilePage: React.FC = () => {
-
-    // Issues with Authentication
-    { /* 
-        
-  const { isAuthenticated, getAccessTokenSilently, loginWithRedirect, isLoading } = useAuth0();
-  const [userProfile, setUserProfile] = useState<UserProfile>({
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [formData, setFormData] = useState({
     username: '',
     email: '',
     phoneNumber: '',
   });
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      console.log('User not authenticated, redirecting to login...');
-      sessionStorage.setItem('auth0_appState', JSON.stringify({ returnTo: '/profile-page' }));
-      loginWithRedirect({ appState: { returnTo: '/profile-page' } });
-    }
-  }, [isAuthenticated, isLoading, loginWithRedirect]);
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      if (isAuthenticated) {
-        try {
-          const token = await getAccessTokenSilently();
-          const response = await fetch('https://localhost:7136/api/User', {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          });
-
-          if (!response.ok) {
-            throw new Error('Network response was not ok ' + response.statusText);
-          }
-
-          const data = await response.json();
-          setUserProfile({
-            username: data.username,
-            email: data.email,
-            phoneNumber: data.phoneNumber,
-          });
-        } catch (error) {
-          console.error('There was an error fetching the user data!', error);
-        }
+    const fetchData = async () => {
+      try {
+        const data = await fetchUserProfile();
+        setUserProfile(data);
+        setFormData({
+          username: data.username,
+          email: data.email,
+          phoneNumber: data.phoneNumber,
+        });
+      } catch (error) {
+        setError('Failed to fetch user profile');
+        console.error('Failed to fetch user profile:', error);
+      } finally {
+        setLoading(false);
       }
     };
 
-    fetchUserProfile();
-  }, [isAuthenticated, getAccessTokenSilently]);
+    fetchData();
+  }, []);
 
-  useEffect(() => {
-    const appState = JSON.parse(sessionStorage.getItem('auth0_appState') || '{}');
-    if (isAuthenticated && appState?.returnTo) {
-      console.log(`Redirecting to ${appState.returnTo}...`);
-      navigate(appState.returnTo);
-      sessionStorage.removeItem('auth0_appState');
-    }
-  }, [isAuthenticated, navigate]);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setUserProfile(prevState => ({
-      ...prevState,
-      [name]: value,
-    }));
+  const handleEditClick = () => {
+    setIsEditing(true);
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSaveClick = async () => {
     try {
-      const token = await getAccessTokenSilently();
-      const response = await fetch('https://localhost:7136/api/User', {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(userProfile),
-      });
-
-      if (!response.ok) {
-        throw new Error('Network response was not ok ' + response.statusText);
-      }
-
-      const data = await response.json();
-      console.log('User profile updated successfully!', data);
+      const updatedProfile = await updateUserProfile(formData);
+      setUserProfile(updatedProfile);
+      setIsEditing(false);
     } catch (error) {
-      console.error('There was an error updating the user profile!', error);
+      setError('Failed to save user profile');
+      console.error('Failed to save user profile:', error);
     }
   };
 
-  if (isLoading || !isAuthenticated) {
-    return <div>Loading...</div>;
+  if (loading) {
+    return <p>Loading...</p>;
   }
 
-  */ }
+  if (error) {
+    return <p>{error}</p>;
+  }
+
   return (
     <>
       <Navbari />
-      <Container className="profile-page">
-        <Row>
-          <Col md={3}>
-            <Nav className="flex-column">
-              <Nav.Link as={Link} to="/profile-page" style={{ color: "#7848F4" }}>Account Information</Nav.Link>
-              <Nav.Link as={Link} to="/my-tickets" style={{ color: "#7848F4" }}>Tickets</Nav.Link>
-            </Nav>
-          </Col>
-          <Col md={9}>
-            <h2>Account Information</h2>
-            <Row>
-              <Col md={4}>
-                <h3>Profile Photo</h3>
-                <div className="profile-photo">
-                  <p>PROFILE IMAGE</p>
-                </div>
-              </Col>
-              <Col md={8}>
-                <h3>Contact Information</h3>
-                <Form>
-                  <Form.Group as={Row} controlId="formUsername">
-                    <Form.Label column sm={2}>Username</Form.Label>
-                    <Col sm={10}>
-                      <Form.Control type="text" name="username" />
-                    </Col>
-                  </Form.Group>
+      <div className="container-fluid">
+        <div className="row">
+          <nav className="col-md-2 d-none d-md-block bg-light sidebar">
+            <div className="sidebar-sticky">
+              <ul className="nav flex-column">
+                <li className="nav-item">
+                  <Link className="nav-link" to="/profile-page">
+                    Account Information
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" to="/my-tickets">
+                    Tickets
+                  </Link>
+                </li>
+              </ul>
+            </div>
+          </nav>
 
-                  <Form.Group as={Row} controlId="formEmail">
-                    <Form.Label column sm={2}>Email</Form.Label>
-                    <Col sm={10}>
-                      <Form.Control type="email" name="email" />
-                    </Col>
-                  </Form.Group>
-
-                  <Form.Group as={Row} controlId="formPhoneNumber">
-                    <Form.Label column sm={2}>Phone Number</Form.Label>
-                    <Col sm={10}>
-                      <Form.Control type="text" name="phoneNumber" />
-                    </Col>
-                  </Form.Group>
-
-                  <Button type="submit" className="save-button">Save Changes</Button>
-                </Form>
-              </Col>
-            </Row>
-          </Col>
-        </Row>
-      </Container>
+          <main role="main" className="col-md-9 ml-sm-auto col-lg-10 px-4">
+            <h1 className="h2">Account Information</h1>
+            {userProfile ? (
+              <div className="account-info w-75">
+                <form className="d-flex flex-column gap-2">
+                  <div className="form-group">
+                    <label>Username</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={formData.username}
+                      disabled={!isEditing}
+                      onChange={(e) =>
+                        setFormData({ ...formData, username: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Email</label>
+                    <input
+                      type="email"
+                      className="form-control"
+                      value={formData.email}
+                      disabled={!isEditing}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Phone Number</label>
+                    <input
+                      type="tel"
+                      className="form-control"
+                      value={formData.phoneNumber}
+                      disabled={!isEditing}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phoneNumber: e.target.value })
+                      }
+                    />
+                  </div>
+                  {isEditing ? (
+                    <button
+                      type="button"
+                      className="btn btn-primary save-btn"
+                      onClick={handleSaveClick}
+                    >
+                      Save Changes
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      className="btn btn-primary edit-btn"
+                      onClick={handleEditClick}
+                    >
+                      Edit
+                    </button>
+                  )}
+                </form>
+              </div>
+            ) : (
+              <p>No user profile found.</p>
+            )}
+            <h2>My Events</h2>
+            <div className="row">
+              {userProfile &&
+                userProfile.events.map((event) => (
+                  <div key={event.Id} className="col-md-4">
+                    <div className="card mb-4 shadow-sm">
+                      <div className="card-body">
+                        <p><strong>Event:</strong> {event.Title}</p>
+                        <p><strong>Start Date:</strong> {new Date(event.StartDate).toLocaleDateString()}</p>
+                        <p><strong>Attendees:</strong> {event.Attendees}</p>
+                        <p><strong>Available Tickets:</strong> {event.AvailableTickets}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </main>
+        </div>
+      </div>
+      <Footeri />
     </>
   );
 };
