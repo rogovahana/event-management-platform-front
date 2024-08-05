@@ -53,10 +53,9 @@
 .event-card {
     width: 100%; 
     margin-bottom: 20px;
-    /* background-color: #fff; */
-    /* border-bottom: 1px solid #dddddd; */
+    border: 1px solid #dddddd;
     transition: transform 0.3s ease-in-out;
-    padding: 20px 0;
+    padding: 20px 10px;
 }
 
 .event-card:hover {
@@ -91,6 +90,7 @@
     margin-bottom: 5px;
 }
 
+
 .map-container {
     width: 500px;
     height: 500px;
@@ -105,6 +105,10 @@
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+}
+
+.dark-svg {
+    fill: #fff;
 }
 
 .share-popup {
