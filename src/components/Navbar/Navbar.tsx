@@ -5,10 +5,12 @@ import Nav from "react-bootstrap/Nav";
 import Form from "react-bootstrap/Form";
 import { Link } from "react-router-dom";
 import { useAuth0 } from '@auth0/auth0-react';
-import { Button, Dropdown } from 'react-bootstrap';
-import "./Navbar.css";
+import {  Dropdown } from 'react-bootstrap';
+import "./Navbar.scss";
 import ThemeToggle from '../ThemeToggle';
 import { useTheme } from '../../contexts/ThemeContext';
+import LoginButton from "../LoginButton";
+import SignUpButton from "../SignUpButton";
 
 function Navbari() {
   const { theme } = useTheme();
@@ -19,7 +21,7 @@ function Navbari() {
       <Container fluid>
         <Navbar.Brand href="/">
           <span>
-            Event<span style={{ color: "#7848F4" }}>Hive</span>
+            Event<span className="primary-color">Hive</span>
           </span>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
@@ -48,16 +50,8 @@ function Navbari() {
               </Dropdown>
             ) : (
               <>
-                <Link to="/login">
-                  <Button variant="outline" style={{ color: "#7848F4" }} className="ms-1 login-btn">
-                    Login
-                  </Button>
-                </Link>
-                <Link to="/sign-up">
-                  <Button variant="primary" style={{ backgroundColor: "#7848F4", borderColor: "#7848F4" }} className="ms-1">
-                    Signup
-                  </Button>
-                </Link>
+                <LoginButton />
+                <SignUpButton />
               </>
             )}
           </Form>
